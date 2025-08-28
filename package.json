@@ -8,7 +8,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "serve": "npm run start",
-    "build": "echo 'No build step required - static files ready'",
+    "build": "vite build",
     "verify": "node verify-setup.js",
     "load-sample": "node src/scripts/loadSampleData.js",
     "load-synthetic": "node src/scripts/loadSyntheticData.js",
