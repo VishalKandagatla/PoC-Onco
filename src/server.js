@@ -23,23 +23,19 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Handle root route BEFORE static files to override index.html
-app.get('/', (req, res) => {
-  // Prevent caching to ensure fresh loads
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  res.sendFile(path.join(__dirname, '../public/clinician-dashboard.html'));
-});
-
-app.use(express.static('public'));
-app.use('/data', express.static(path.join(__dirname, 'data')));
-
+// API routes
 app.use('/api/patients', patientRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/datasources', dataSourceRoutes);
 app.use('/api/longitudinal', longitudinalRoutes);
 app.use('/api', searchRoutes);
+
+// Static assets
+const distPath = path.join(__dirname, '../dist');
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(distPath));
+app.use(express.static(publicPath));
+app.use('/data', express.static(path.join(__dirname, 'data')));
 
 // Simple test endpoint
 app.get('/api/test', (req, res) => {
@@ -237,11 +233,16 @@ app.get('/api/test/patients', async (req, res) => {
   }
 });
 
+// Fallback for client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Something went wrong!',
-    message: err.message 
+    message: err.message
   });
 });
 
