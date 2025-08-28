@@ -4,7 +4,7 @@
   "description": "AI-Powered Interoperability Layer for Precision Oncology Care in India",
   "main": "index.js",
   "scripts": {
-    "build:dev": "vite build --mode development"
+    "build:dev": "vite build --mode development",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "serve": "npm run start",
