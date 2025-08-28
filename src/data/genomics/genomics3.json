@@ -1,0 +1,13 @@
+{
+  "patient_id": "case_3",
+  "mutated_genes": [
+    {
+      "gene": "BRCA1",
+      "variant": "c.68_69delAG"
+    },
+    {
+      "gene": "TP53",
+      "variant": "c.1010G>A (p.R337H)"
+    }
+  ]
+}

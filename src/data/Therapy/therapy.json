@@ -1,0 +1,25 @@
+{
+  "patient_id": "case_1",
+  "treatments": [
+    {
+      "type": "Surgery",
+      "date": "2025-01-18",
+      "description": "Radical resection of tumor with mandibular reconstruction",
+      "hospital": "Government tertiary hospital",
+      "status": "Completed"
+    },
+    {
+      "type": "Chemotherapy",
+      "date": "2025-02-15 to 2025-04-15",
+      "regimen": "Cisplatin + 5-FU",
+      "cycles": 3,
+      "status": "Completed"
+    },
+    {
+      "type": "Radiation therapy",
+      "date": "2025-05-01 to 2025-05-30",
+      "dose": "60 Gy in 30 fractions",
+      "status": "Completed"
+    }
+  ]
+}

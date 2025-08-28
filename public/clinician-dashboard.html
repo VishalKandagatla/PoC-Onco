@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinician Dashboard - Entheory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Refactored Stylesheets -->
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    
+    <!-- Shared Data -->
+    <script src="/js/patientData.js"></script>
+    
+    <!-- Refactored JavaScript Modules -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/patientService.js"></script>
+    <script src="/js/components.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation will be inserted by navigation.js -->
+    
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="page-title">Clinician Dashboard</h1>
+            <p class="page-subtitle">Manage patient longitudinal histories and clinical records</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div id="stats-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Statistics will be populated by JavaScript -->
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Sidebar -->
+            <div class="dashboard-sidebar">
+                <!-- Search -->
+                <div class="content-card mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Find Patient</h2>
+                    <div id="search-container">
+                        <!-- Search input will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Patient List -->
+                <div class="content-card">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Patients</h2>
+                    <div id="patients-list">
+                        <!-- Patient cards will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="dashboard-main">
+                <div id="patient-overview" class="content-card min-h-96">
+                    <!-- Patient overview will be populated when a patient is selected -->
+                    <div class="text-center py-16">
+                        <i class="fas fa-user-circle text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Select a Patient</h3>
+                        <p class="text-gray-500">Choose a patient from the list to view their longitudinal history</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard Controller
+        class DashboardController {
+            constructor() {
+                this.patients = [];
+                this.currentPatient = null;
+                this.filteredPatients = [];
+            }
+
+            async init() {
+                try {
+                    // Initialize navigation
+                    Navigation.init('dashboard');
+
+                    // Load patient data
+                    await this.loadPatients();
+                    
+                    // Render initial UI
+                    this.renderStatistics();
+                    this.renderSearchInput();
+                    this.renderPatientList();
+                    
+                    console.log('Dashboard initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing dashboard:', error);
+                    this.handleError('Failed to load dashboard');
+                }
+            }
+
+            async loadPatients() {
+                try {
+                    this.patients = PatientService.getAllPatients();
+                    this.filteredPatients = [...this.patients];
+                    
+                    if (this.patients.length === 0) {
+                        throw new Error('No patient data available');
+                    }
+                } catch (error) {
+                    console.error('Error loading patients:', error);
+                    throw error;
+                }
+            }
+
+            renderStatistics() {
+                const stats = PatientService.getPatientStats();
+                const statsContainer = document.getElementById('stats-container');
+                
+                const statCards = [
+                    { value: stats.total, label: 'Total Patients', color: 'blue' },
+                    { value: stats.active, label: 'Active Cases', color: 'green' },
+                    { value: stats.recentVisits, label: 'Recent Visits', color: 'purple' },
+                    { value: stats.pendingReviews, label: 'Pending Reviews', color: 'orange' }
+                ];
+
+                statsContainer.innerHTML = statCards
+                    .map(stat => Components.createStatCard(stat))
+                    .join('');
+            }
+
+            renderSearchInput() {
+                const searchContainer = document.getElementById('search-container');
+                searchContainer.innerHTML = Components.createSearchInput({
+                    placeholder: 'Search by name, ID, or diagnosis...',
+                    onSearch: this.handleSearch.bind(this)
+                });
+            }
+
+            renderPatientList() {
+                const patientsList = document.getElementById('patients-list');
+                
+                if (this.filteredPatients.length === 0) {
+                    patientsList.innerHTML = Components.createEmptyState({
+                        icon: 'fas fa-users',
+                        title: 'No patients found',
+                        message: 'Try adjusting your search criteria.'
+                    });
+                    return;
+                }
+
+                patientsList.innerHTML = this.filteredPatients
+                    .map(patient => Components.createPatientCard(patient, null))
+                    .join('');
+                
+                // Add click event listeners after rendering
+                this.attachPatientCardListeners();
+            }
+
+            attachPatientCardListeners() {
+                // Add click event listeners to patient cards
+                const cards = document.querySelectorAll('.patient-card');
+                console.log('Attaching event listeners to', cards.length, 'patient cards');
+                
+                cards.forEach(card => {
+                    const patientId = card.getAttribute('data-patient-id');
+                    if (patientId) {
+                        card.addEventListener('click', () => {
+                            console.log('Patient card clicked:', patientId);
+                            this.selectPatient(patientId);
+                        });
+                        console.log('Event listener attached for patient:', patientId);
+                    }
+                });
+            }
+
+            renderPatientOverview(patient) {
+                const overviewContainer = document.getElementById('patient-overview');
+                
+                if (!patient) {
+                    overviewContainer.innerHTML = `
+                        <div class="text-center py-16">
+                            <i class="fas fa-user-circle text-6xl text-gray-300 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Select a Patient</h3>
+                            <p class="text-gray-500">Choose a patient from the list to view their longitudinal history</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const overview = PatientService.getPatientOverview(patient);
+                const avatarColor = PatientService.getPatientAvatarColor(patient);
+                const initials = Utils.getInitials(patient.name);
+                const status = PatientService.formatPatientStatus(patient.treatmentStatus);
+
+                overviewContainer.innerHTML = `
+                    <div class="patient-overview-modal">
+                        <div class="modal-header">
+                            <div class="patient-avatar-large" style="background-color: ${avatarColor}">
+                                ${initials}
+                            </div>
+                            <div class="patient-basic-info">
+                                <h2 class="text-xl font-bold text-gray-900">${Utils.sanitizeHtml(patient.name)}</h2>
+                                <p class="text-gray-600">Age: ${patient.age} &nbsp;&nbsp; Gender: ${patient.gender} &nbsp;&nbsp; ID: ${patient.id}</p>
+                            </div>
+                            <button onclick="this.closest('.patient-overview-modal').remove()" class="close-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        <div class="status-cards-row">
+                            <div class="status-card blue">
+                                <h4>Current Diagnosis</h4>
+                                <div class="status-value">${Utils.sanitizeHtml(patient.diagnosis)}</div>
+                                <div class="status-subtitle">${patient.stage || ''}</div>
+                            </div>
+                            <div class="status-card green">
+                                <h4>Treatment Status</h4>
+                                <div class="status-value">${status.text}</div>
+                            </div>
+                            <div class="status-card purple">
+                                <h4>Last Visit</h4>
+                                <div class="status-value">${Utils.formatDate(patient.lastVisit)}</div>
+                            </div>
+                        </div>
+
+                        <div class="metadata-section">
+                            <h3 class="section-title">Patient Metadata</h3>
+                            
+                            <div class="metadata-grid">
+                                <div class="metadata-column">
+                                    <h4 class="column-title">Clinical Indicators</h4>
+                                    <div class="indicator-item">
+                                        <span class="indicator-label">Cancer Stage</span>
+                                        <span class="indicator-value stage">${overview.clinicalIndicators.cancerStage}</span>
+                                    </div>
+                                    <div class="indicator-item">
+                                        <span class="indicator-label">Risk Factors</span>
+                                        <span class="indicator-value risk-factors">${overview.clinicalIndicators.riskFactors}</span>
+                                    </div>
+                                    <div class="indicator-item">
+                                        <span class="indicator-label">ECOG Status</span>
+                                        <span class="indicator-value ecog">${overview.clinicalIndicators.ecogStatus}</span>
+                                    </div>
+                                </div>
+
+                                <div class="metadata-column">
+                                    <h4 class="column-title">Key Biomarkers</h4>
+                                    ${overview.keyBiomarkers.map(biomarker => `
+                                        <div class="biomarker-item">
+                                            <div class="biomarker-header">
+                                                <span class="biomarker-name">${biomarker.name}</span>
+                                                <span class="biomarker-value ${biomarker.status}">${biomarker.value}</span>
+                                            </div>
+                                            <div class="biomarker-description">${biomarker.description}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
+                            <div class="treatment-summary">
+                                <h4 class="section-subtitle">Treatment Summary</h4>
+                                <div class="treatment-details">
+                                    <div class="treatment-item">
+                                        <strong>Latest Response:</strong> ${overview.treatmentSummary.latestResponse}
+                                    </div>
+                                    <div class="treatment-item">
+                                        <strong>Active Side Effects:</strong> ${overview.treatmentSummary.activeSideEffects} ongoing
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="recent-timeline-section">
+                            <h3 class="section-title">Recent Timeline</h3>
+                            <div class="timeline-items">
+                                ${overview.recentActivity.map(activity => `
+                                    <div class="timeline-item">
+                                        <div class="timeline-icon">
+                                            <i class="fas ${this.getTimelineIcon(activity.type)}"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-title">${Utils.sanitizeHtml(activity.event)}</div>
+                                            <div class="timeline-date">${Utils.formatDate(activity.date)}</div>
+                                        </div>
+                                        <div class="timeline-status ${activity.status}">${activity.status}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <a href="/patient-detail.html?id=${patient.id}" class="view-history-btn">
+                                View Complete History <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+
+            getTimelineIcon(type) {
+                const iconMap = {
+                    'treatment': 'fa-syringe',
+                    'surgery': 'fa-cut',
+                    'followup': 'fa-calendar-check',
+                    'lab': 'fa-flask',
+                    'imaging': 'fa-x-ray',
+                    'diagnosis': 'fa-stethoscope'
+                };
+                return iconMap[type] || 'fa-calendar-alt';
+            }
+
+            handleSearch(query) {
+                this.filteredPatients = PatientService.searchPatients(query);
+                this.renderPatientList();
+            }
+
+            selectPatient(patientId) {
+                try {
+                    console.log('Selecting patient:', patientId);
+                    
+                    // Update selected state
+                    document.querySelectorAll('.patient-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    
+                    const selectedCard = document.querySelector(`[data-patient-id="${patientId}"]`);
+                    if (selectedCard) {
+                        selectedCard.classList.add('selected');
+                        console.log('Selected card found and highlighted');
+                    } else {
+                        console.warn('Selected card not found for patientId:', patientId);
+                    }
+
+                    // Load and display patient overview
+                    this.currentPatient = PatientService.getPatientById(patientId);
+                    console.log('Current patient loaded:', this.currentPatient ? this.currentPatient.name : 'null');
+                    
+                    this.renderPatientOverview(this.currentPatient);
+                } catch (error) {
+                    console.error('Error selecting patient:', error);
+                    Utils.showToast('Error loading patient data', 'error');
+                }
+            }
+
+            handleError(message) {
+                const mainContent = document.getElementById('patient-overview');
+                mainContent.innerHTML = Components.createErrorMessage(message, this.init.bind(this));
+                Utils.showToast(message, 'error');
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const dashboard = new DashboardController();
+            dashboard.init();
+            
+            // Make dashboard available globally for debugging
+            window.dashboard = dashboard;
+        });
+    </script>
+</body>
+</html>

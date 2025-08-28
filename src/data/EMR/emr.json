@@ -1,0 +1,23 @@
+{
+  "patient_id": "case_2",
+  "name": "Lakshmi Devi",
+  "age": 45,
+  "gender": "Female",
+  "state": "Tamil Nadu",
+  "language_family": "Dravidian",
+  "risk_factors": [
+    "Human papillomavirus (HPV) infection",
+    "Multiple pregnancies"
+  ],
+  "presenting_complaint": "Abnormal vaginal bleeding and pelvic pain.",
+  "clinical_exam": "Large friable cervical mass extending to pelvic wall.",
+  "diagnosis": "Cervical carcinoma",
+  "stage": "IIIB",
+  "hospital_type": "Urban private cancer center",
+  "ABHA_integration": true,
+  "insurance": "Private insurance (coverage up to 500000 INR)",
+  "history": "Multiparity, poor screening history, rural background.",
+  "family_history": "No known familial cancers.",
+  "treatment_plan": "Concurrent chemoradiation followed by brachytherapy.",
+  "outcome": "Complete response at 1 year with no residual disease."
+}

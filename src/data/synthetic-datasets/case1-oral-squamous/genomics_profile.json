@@ -1,0 +1,70 @@
+{
+  "reportDate": "2023-12-10",
+  "sampleId": "GENOMICS-001",
+  "sampleType": "Tumor tissue",
+  "sequencingPlatform": "Illumina NovaSeq",
+  "panelName": "Comprehensive Cancer Panel",
+  "tumorMutationalBurden": 8.2,
+  "microsatelliteStatus": "MSS",
+  "mutationProfile": [
+    {
+      "gene": "TP53",
+      "chromosome": "17",
+      "position": "7577539",
+      "variant": "p.R273H",
+      "variantType": "missense",
+      "vaf": 0.42,
+      "interpretation": "Pathogenic",
+      "cosmicId": "COSM10663",
+      "clinicalSignificance": "Loss of tumor suppressor function",
+      "therapeuticImplications": "Associated with resistance to conventional chemotherapy"
+    },
+    {
+      "gene": "CDKN2A",
+      "chromosome": "9",
+      "position": "21970916",
+      "variant": "p.R58*",
+      "variantType": "nonsense",
+      "vaf": 0.38,
+      "interpretation": "Pathogenic",
+      "cosmicId": "COSM12345",
+      "clinicalSignificance": "Loss of cell cycle control",
+      "therapeuticImplications": "Potential target for CDK4/6 inhibitors"
+    },
+    {
+      "gene": "PIK3CA",
+      "chromosome": "3",
+      "position": "178952085",
+      "variant": "p.H1047R",
+      "variantType": "missense",
+      "vaf": 0.28,
+      "interpretation": "Likely Pathogenic",
+      "cosmicId": "COSM775",
+      "clinicalSignificance": "PI3K pathway activation",
+      "therapeuticImplications": "Potential target for PI3K inhibitors"
+    }
+  ],
+  "copyNumberVariations": [
+    {
+      "gene": "EGFR",
+      "copyNumber": 2.1,
+      "interpretation": "Normal"
+    },
+    {
+      "gene": "MYC",
+      "copyNumber": 3.8,
+      "interpretation": "Amplified"
+    }
+  ],
+  "immuneMarkers": {
+    "pdl1Expression": "40%",
+    "cd8TilDensity": "High",
+    "mismatchRepairStatus": "Proficient"
+  },
+  "recommendations": [
+    "Consider platinum-based chemotherapy as first-line treatment",
+    "TP53 mutation may confer resistance to conventional therapy",
+    "High PD-L1 expression suggests potential benefit from immunotherapy",
+    "PIK3CA mutation - consider clinical trial with PI3K inhibitors"
+  ]
+}

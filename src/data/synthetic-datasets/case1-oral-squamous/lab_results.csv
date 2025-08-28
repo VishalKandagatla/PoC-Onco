@@ -1,0 +1,7 @@
+testId,testName,testDate,value,unit,referenceRange,interpretation
+LAB-2023-001,Complete Blood Count,2023-11-18,11.2,g/dL,12-16 g/dL,Mild anemia
+LAB-2023-002,Creatinine,2023-11-18,0.9,mg/dL,0.6-1.2 mg/dL,Normal
+LAB-2023-003,Albumin,2023-11-18,3.2,g/dL,3.5-5.0 g/dL,Low
+LAB-2023-004,Total Protein,2023-11-18,6.8,g/dL,6.0-8.0 g/dL,Normal
+LAB-2023-005,ALT,2023-11-18,28,U/L,10-40 U/L,Normal
+LAB-2023-006,AST,2023-11-18,32,U/L,10-40 U/L,Normal

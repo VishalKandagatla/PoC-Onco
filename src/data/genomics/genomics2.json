@@ -1,0 +1,13 @@
+{
+  "patient_id": "case_2",
+  "mutated_genes": [
+    {
+      "gene": "PIK3CA",
+      "variant": "c.1633G>A (p.E545K)"
+    },
+    {
+      "gene": "PTEN",
+      "variant": "c.388C>T (p.R130Q)"
+    }
+  ]
+}

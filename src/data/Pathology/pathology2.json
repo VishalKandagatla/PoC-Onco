@@ -1,0 +1,9 @@
+{
+  "patient_id": "case_2",
+  "sample_type": "Cervical biopsy",
+  "tumor_grade": "Poorly differentiated (Grade III)",
+  "histology": "Non-keratinizing squamous cell carcinoma.",
+  "infiltration": "Extension to parametrial tissue without lymphovascular invasion.",
+  "pathology_notes": "Tumor displays features of advanced non-keratinizing carcinoma.",
+  "image_path": "pathology/pathology_image.png"
+}

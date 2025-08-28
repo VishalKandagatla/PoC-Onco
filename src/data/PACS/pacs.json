@@ -1,0 +1,20 @@
+{
+  "patient_id": "case_1",
+  "imaging_studies": [
+    {
+      "study_id": "case_1_baseline",
+      "modality": "CT",
+      "body_site": "Head & Neck",
+      "date": "2025-01-10",
+      "image_file": "pacs/imaging_baseline.png"
+    },
+    {
+      "study_id": "case_1_followup",
+      "modality": "MRI",
+      "body_site": "Head & Neck",
+      "date": "2025-06-20",
+      "image_file": "pacs/imaging_followup.png"
+    }
+  ],
+  "notes": "Baseline CT demonstrates mass in mandibular region; follow-up MRI shows reduction after treatment."
+}

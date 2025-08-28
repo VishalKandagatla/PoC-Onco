@@ -1,0 +1,380 @@
+[
+  {
+    "patientId": "case_2",
+    "abhaId": "SYNTHETIC-CASE_2",
+    "demographics": {
+      "firstName": "Lakshmi",
+      "lastName": "Devi",
+      "age": 45,
+      "gender": "female",
+      "state": "Tamil Nadu",
+      "language": "Dravidian"
+    },
+    "cancerType": {
+      "primary": "Cervical carcinoma",
+      "stage": "IIIB",
+      "histology": "Large friable cervical mass extending to pelvic wall.",
+      "riskFactors": [
+        "Human papillomavirus (HPV) infection",
+        "Multiple pregnancies"
+      ]
+    },
+    "clinicalInfo": {
+      "presentingComplaint": "Abnormal vaginal bleeding and pelvic pain.",
+      "clinicalExam": "Large friable cervical mass extending to pelvic wall.",
+      "treatmentPlan": "Concurrent chemoradiation followed by brachytherapy.",
+      "outcome": "Complete response at 1 year with no residual disease.",
+      "insurance": "Private insurance (coverage up to 500000 INR)"
+    },
+    "imaging": [
+      {
+        "studyId": "case_2_baseline",
+        "modality": "MRI",
+        "bodySite": "Pelvis",
+        "date": "2025-02-01",
+        "imageFile": "pacs/case_2_baseline.png"
+      },
+      {
+        "studyId": "case_2_followup",
+        "modality": "CT",
+        "bodySite": "Pelvis",
+        "date": "2025-10-01",
+        "imageFile": "pacs/case_2_followup.png"
+      }
+    ],
+    "imagingNotes": "Baseline MRI shows bulky cervical mass; follow-up CT demonstrates no residual mass.",
+    "labResults": [
+      {
+        "timestamp": "day_0",
+        "observations": {
+          "RBC": 4.37,
+          "WBC": 7.7,
+          "Platelets": 293,
+          "CA-125": 6.32
+        }
+      },
+      {
+        "timestamp": "day_30",
+        "observations": {
+          "RBC": 4.11,
+          "WBC": 7.7,
+          "Platelets": 176,
+          "CA-125": 11.86
+        }
+      },
+      {
+        "timestamp": "day_60",
+        "observations": {
+          "RBC": 5.29,
+          "WBC": 5.8,
+          "Platelets": 329,
+          "CA-125": 6.96
+        }
+      }
+    ],
+    "pathology": {},
+    "genomics": {
+      "mutatedGenes": [
+        {
+          "gene": "PIK3CA",
+          "variant": "c.1633G>A (p.E545K)"
+        },
+        {
+          "gene": "PTEN",
+          "variant": "c.388C>T (p.R130Q)"
+        }
+      ]
+    },
+    "hospital": {
+      "patient_id": "case_2",
+      "admission_date": "2025-02-05",
+      "discharge_date": "2025-02-20",
+      "ward": "Gynaecologic oncology",
+      "room_type": "Private room",
+      "insurance_details": "Private insurance (coverage up to 500000 INR)",
+      "billing_account": {
+        "expected_cost": 300000,
+        "payment_status": "pending"
+      },
+      "ABHA_integration": true,
+      "notes": "Administrative information for the patient's hospital stay."
+    },
+    "therapy": {
+      "patient_id": "case_2",
+      "treatments": [
+        {
+          "type": "Chemoradiation",
+          "date": "2025-02-10 to 2025-04-10",
+          "regimen": "Weekly cisplatin concurrent with pelvic radiation",
+          "dose": "50 Gy external beam",
+          "status": "Completed"
+        },
+        {
+          "type": "Brachytherapy",
+          "date": "2025-04-15 to 2025-04-30",
+          "dose": "30 Gy in 3 fractions",
+          "status": "Completed"
+        }
+      ]
+    }
+  },
+  {
+    "patientId": "case_1",
+    "abhaId": "SYNTHETIC-CASE_1",
+    "demographics": {
+      "firstName": "Rajesh",
+      "lastName": "Kumar",
+      "age": 60,
+      "gender": "male",
+      "state": "Uttar Pradesh",
+      "language": "Indo‑Aryan"
+    },
+    "cancerType": {
+      "primary": "Oral squamous cell carcinoma",
+      "stage": "T2N1M0",
+      "histology": "Ulcerative lesion on left mandibular alveolus with lymphadenopathy.",
+      "riskFactors": [
+        "Tobacco chewing",
+        "Smoking",
+        "Betel nut use"
+      ]
+    },
+    "clinicalInfo": {
+      "presentingComplaint": "Painful mouth ulcer with swelling in left jaw region.",
+      "clinicalExam": "Ulcerative lesion on left mandibular alveolus with lymphadenopathy.",
+      "treatmentPlan": "Radical surgery followed by adjuvant radiation and chemotherapy.",
+      "outcome": "Partial response with reduction in tumor size at 6 months.",
+      "insurance": "Ayushman Bharat"
+    },
+    "imaging": [
+      {
+        "studyId": "case_1_baseline",
+        "modality": "CT",
+        "bodySite": "Head & Neck",
+        "date": "2025-01-10",
+        "imageFile": "pacs/case_1_baseline.png"
+      },
+      {
+        "studyId": "case_1_followup",
+        "modality": "MRI",
+        "bodySite": "Head & Neck",
+        "date": "2025-06-20",
+        "imageFile": "pacs/case_1_followup.png"
+      }
+    ],
+    "imagingNotes": "Baseline CT demonstrates mass in mandibular region; follow-up MRI shows reduction after treatment.",
+    "labResults": [
+      {
+        "timestamp": "day_0",
+        "observations": {
+          "RBC": 4.22,
+          "WBC": 4.1,
+          "Platelets": 299,
+          "SCC": 1.66
+        }
+      },
+      {
+        "timestamp": "day_30",
+        "observations": {
+          "RBC": 4.32,
+          "WBC": 6.7,
+          "Platelets": 196,
+          "SCC": 2.74
+        }
+      },
+      {
+        "timestamp": "day_60",
+        "observations": {
+          "RBC": 3.62,
+          "WBC": 4.4,
+          "Platelets": 310,
+          "SCC": 3.44
+        }
+      }
+    ],
+    "pathology": {},
+    "genomics": {
+      "mutatedGenes": [
+        {
+          "gene": "TP53",
+          "variant": "c.743G>A (p.R248Q)"
+        },
+        {
+          "gene": "NOTCH1",
+          "variant": "c.3949C>T (p.R1317C)"
+        }
+      ]
+    },
+    "hospital": {
+      "patient_id": "case_1",
+      "admission_date": "2025-01-15",
+      "discharge_date": "2025-01-25",
+      "ward": "Head & Neck Oncology",
+      "room_type": "General ward",
+      "insurance_details": "Ayushman Bharat",
+      "billing_account": {
+        "expected_cost": 150000,
+        "payment_status": "pending"
+      },
+      "ABHA_integration": true,
+      "notes": "Administrative information for the patient's hospital stay."
+    },
+    "therapy": {
+      "patient_id": "case_1",
+      "treatments": [
+        {
+          "type": "Surgery",
+          "date": "2025-01-18",
+          "description": "Radical resection of tumor with mandibular reconstruction",
+          "hospital": "Government tertiary hospital",
+          "status": "Completed"
+        },
+        {
+          "type": "Chemotherapy",
+          "date": "2025-02-15 to 2025-04-15",
+          "regimen": "Cisplatin + 5-FU",
+          "cycles": 3,
+          "status": "Completed"
+        },
+        {
+          "type": "Radiation therapy",
+          "date": "2025-05-01 to 2025-05-30",
+          "dose": "60 Gy in 30 fractions",
+          "status": "Completed"
+        }
+      ]
+    }
+  },
+  {
+    "patientId": "case_3",
+    "abhaId": "SYNTHETIC-CASE_3",
+    "demographics": {
+      "firstName": "Rina",
+      "lastName": "Saha",
+      "age": 50,
+      "gender": "female",
+      "state": "West Bengal",
+      "language": "Indo‑Aryan"
+    },
+    "cancerType": {
+      "primary": "Breast carcinoma",
+      "stage": "IIA",
+      "histology": "Firm 2.5 cm mass in upper outer quadrant of right breast; axillary nodes palpable.",
+      "riskFactors": [
+        "Late first pregnancy",
+        "Sedentary lifestyle",
+        "Family history of breast cancer"
+      ]
+    },
+    "clinicalInfo": {
+      "presentingComplaint": "Palpable lump in right breast.",
+      "clinicalExam": "Firm 2.5 cm mass in upper outer quadrant of right breast; axillary nodes palpable.",
+      "treatmentPlan": "Breast-conserving surgery, adjuvant chemotherapy and radiation, hormonal therapy (tamoxifen).",
+      "outcome": "Stable disease with no recurrence at 1 year.",
+      "insurance": "None (self-financed)"
+    },
+    "imaging": [
+      {
+        "studyId": "case_3_baseline",
+        "modality": "Mammography",
+        "bodySite": "Breast",
+        "date": "2025-03-05",
+        "imageFile": "pacs/case_3_baseline.png"
+      },
+      {
+        "studyId": "case_3_followup",
+        "modality": "MRI",
+        "bodySite": "Breast",
+        "date": "2025-09-10",
+        "imageFile": "pacs/case_3_followup.png"
+      }
+    ],
+    "imagingNotes": "Mammogram reveals suspicious mass; follow-up MRI shows no residual disease.",
+    "labResults": [
+      {
+        "timestamp": "day_0",
+        "observations": {
+          "RBC": 5.28,
+          "WBC": 6.7,
+          "Platelets": 359,
+          "CA 15-3": 27.64
+        }
+      },
+      {
+        "timestamp": "day_30",
+        "observations": {
+          "RBC": 4.69,
+          "WBC": 8.9,
+          "Platelets": 313,
+          "CA 15-3": 39.48
+        }
+      },
+      {
+        "timestamp": "day_60",
+        "observations": {
+          "RBC": 5.48,
+          "WBC": 7.1,
+          "Platelets": 348,
+          "CA 15-3": 27.28
+        }
+      }
+    ],
+    "pathology": {},
+    "genomics": {
+      "mutatedGenes": [
+        {
+          "gene": "BRCA1",
+          "variant": "c.68_69delAG"
+        },
+        {
+          "gene": "TP53",
+          "variant": "c.1010G>A (p.R337H)"
+        }
+      ]
+    },
+    "hospital": {
+      "patient_id": "case_3",
+      "admission_date": "2025-03-12",
+      "discharge_date": "2025-03-20",
+      "ward": "Breast surgery ward",
+      "room_type": "Shared ward",
+      "insurance_details": "None (self-financed)",
+      "billing_account": {
+        "expected_cost": 200000,
+        "payment_status": "pending"
+      },
+      "ABHA_integration": false,
+      "notes": "Administrative information for the patient's hospital stay."
+    },
+    "therapy": {
+      "patient_id": "case_3",
+      "treatments": [
+        {
+          "type": "Surgery",
+          "date": "2025-03-15",
+          "description": "Lumpectomy with sentinel lymph node biopsy",
+          "status": "Completed"
+        },
+        {
+          "type": "Chemotherapy",
+          "date": "2025-04-01 to 2025-06-30",
+          "regimen": "AC-T (Adriamycin + Cyclophosphamide followed by Taxol)",
+          "cycles": 6,
+          "status": "Completed"
+        },
+        {
+          "type": "Radiation therapy",
+          "date": "2025-07-10 to 2025-08-20",
+          "dose": "50 Gy in 25 fractions",
+          "status": "Completed"
+        },
+        {
+          "type": "Hormonal therapy",
+          "date": "2025-09-01 to 2030-09-01",
+          "agent": "Tamoxifen 20 mg daily",
+          "status": "Ongoing"
+        }
+      ]
+    }
+  }
+]

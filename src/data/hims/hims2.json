@@ -1,0 +1,14 @@
+{
+  "patient_id": "case_2",
+  "admission_date": "2025-02-05",
+  "discharge_date": "2025-02-20",
+  "ward": "Gynaecologic oncology",
+  "room_type": "Private room",
+  "insurance_details": "Private insurance (coverage up to 500000 INR)",
+  "billing_account": {
+    "expected_cost": 300000,
+    "payment_status": "pending"
+  },
+  "ABHA_integration": true,
+  "notes": "Administrative information for the patient's hospital stay."
+}

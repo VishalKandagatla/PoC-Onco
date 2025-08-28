@@ -1,0 +1,13 @@
+{
+  "patient_id": "case_1",
+  "mutated_genes": [
+    {
+      "gene": "TP53",
+      "variant": "c.743G>A (p.R248Q)"
+    },
+    {
+      "gene": "NOTCH1",
+      "variant": "c.3949C>T (p.R1317C)"
+    }
+  ]
+}

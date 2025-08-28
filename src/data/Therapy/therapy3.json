@@ -1,0 +1,30 @@
+{
+  "patient_id": "case_3",
+  "treatments": [
+    {
+      "type": "Surgery",
+      "date": "2025-03-15",
+      "description": "Lumpectomy with sentinel lymph node biopsy",
+      "status": "Completed"
+    },
+    {
+      "type": "Chemotherapy",
+      "date": "2025-04-01 to 2025-06-30",
+      "regimen": "AC-T (Adriamycin + Cyclophosphamide followed by Taxol)",
+      "cycles": 6,
+      "status": "Completed"
+    },
+    {
+      "type": "Radiation therapy",
+      "date": "2025-07-10 to 2025-08-20",
+      "dose": "50 Gy in 25 fractions",
+      "status": "Completed"
+    },
+    {
+      "type": "Hormonal therapy",
+      "date": "2025-09-01 to 2030-09-01",
+      "agent": "Tamoxifen 20 mg daily",
+      "status": "Ongoing"
+    }
+  ]
+}

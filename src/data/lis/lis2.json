@@ -1,0 +1,32 @@
+{
+  "patient_id": "case_2",
+  "lab_results": [
+    {
+      "timestamp": "day_0",
+      "observations": {
+        "RBC": 4.37,
+        "WBC": 7.7,
+        "Platelets": 293,
+        "CA-125": 6.32
+      }
+    },
+    {
+      "timestamp": "day_30",
+      "observations": {
+        "RBC": 4.11,
+        "WBC": 7.7,
+        "Platelets": 176,
+        "CA-125": 11.86
+      }
+    },
+    {
+      "timestamp": "day_60",
+      "observations": {
+        "RBC": 5.29,
+        "WBC": 5.8,
+        "Platelets": 329,
+        "CA-125": 6.96
+      }
+    }
+  ]
+}

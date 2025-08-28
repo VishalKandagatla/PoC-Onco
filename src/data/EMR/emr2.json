@@ -1,0 +1,24 @@
+{
+  "patient_id": "case_1",
+  "name": "Rajesh Kumar",
+  "age": 60,
+  "gender": "Male",
+  "state": "Uttar Pradesh",
+  "language_family": "Indo\u2011Aryan",
+  "risk_factors": [
+    "Tobacco chewing",
+    "Smoking",
+    "Betel nut use"
+  ],
+  "presenting_complaint": "Painful mouth ulcer with swelling in left jaw region.",
+  "clinical_exam": "Ulcerative lesion on left mandibular alveolus with lymphadenopathy.",
+  "diagnosis": "Oral squamous cell carcinoma",
+  "stage": "T2N1M0",
+  "hospital_type": "Government tertiary referral hospital",
+  "ABHA_integration": true,
+  "insurance": "Ayushman Bharat",
+  "history": "Chronic tobacco chewing for 30 years, occasional alcohol use.",
+  "family_history": "No known history of cancer in immediate family.",
+  "treatment_plan": "Radical surgery followed by adjuvant radiation and chemotherapy.",
+  "outcome": "Partial response with reduction in tumor size at 6 months."
+}

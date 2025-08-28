@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Detail - Entheory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Refactored Stylesheets -->
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/patient-detail.css">
+    
+    <!-- Shared Data -->
+    <script src="/js/patientData.js"></script>
+    
+    <!-- Refactored JavaScript Modules -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/patientService.js"></script>
+    <script src="/js/components.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation will be inserted by navigation.js -->
+    
+    <!-- Back Button -->
+    <div class="max-w-7xl mx-auto px-6 py-4">
+        <button onclick="history.back()" class="btn-secondary">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 pb-8">
+        <!-- Patient Header -->
+        <div id="patient-header">
+            <!-- Patient header will be populated by JavaScript -->
+        </div>
+
+        <!-- Status Cards -->
+        <div id="status-cards" class="status-cards">
+            <!-- Status cards will be populated by JavaScript -->
+        </div>
+
+        <!-- Patient Tabs -->
+        <div class="patient-tabs" id="patient-tabs">
+            <!-- Tabs will be populated by JavaScript -->
+        </div>
+
+        <!-- Tab Content -->
+        <div id="tab-content-container">
+            <!-- Tab content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal-overlay hidden" style="display: none !important;" onclick="PatientDetailController.closeImageModal()">
+        <div class="modal-content max-w-4xl" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between p-4 border-b">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">Medical Image</h3>
+                    <p class="text-sm text-gray-600" id="modalDate">Date</p>
+                </div>
+                <button onclick="PatientDetailController.closeImageModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4">
+                <img id="modalImage" src="" alt="" class="w-full h-auto rounded-lg">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Patient Detail Controller
+        class PatientDetailController {
+            constructor() {
+                this.currentPatient = null;
+                this.activeTab = 'timeline';
+                this.tabs = [
+                    { id: 'timeline', label: 'Timeline', icon: 'fas fa-clock' },
+                    { id: 'history', label: 'Medical History', icon: 'fas fa-file-medical' },
+                    { id: 'labs', label: 'Lab Results', icon: 'fas fa-vial' },
+                    { id: 'imaging', label: 'Imaging', icon: 'fas fa-x-ray' },
+                    { id: 'genomics', label: 'Genomics', icon: 'fas fa-dna' },
+                    { id: 'molecular', label: 'Molecular Profile', icon: 'fas fa-atom' },
+                    { id: 'treatment', label: 'Treatment Response', icon: 'fas fa-heartbeat' }
+                ];
+            }
+
+            async init() {
+                try {
+                    // Initialize navigation
+                    Navigation.init('dashboard');
+
+                    // Ensure modal is hidden on page load
+                    const modal = document.getElementById('imageModal');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        modal.style.display = 'none';
+                        modal.style.visibility = 'hidden';
+                    }
+
+                    // Load patient from URL
+                    const patientId = this.getPatientIdFromUrl();
+                    if (!patientId) {
+                        throw new Error('No patient ID provided');
+                    }
+
+                    await this.loadPatient(patientId);
+                    this.renderPatientHeader();
+                    this.renderStatusCards();
+                    this.renderTabs();
+                    this.renderTabContent();
+
+                    // Ensure modal stays hidden after rendering
+                    setTimeout(() => {
+                        const modal = document.getElementById('imageModal');
+                        if (modal) {
+                            modal.classList.add('hidden');
+                            modal.style.display = 'none';
+                            modal.style.visibility = 'hidden';
+                        }
+                        // Mark page as fully loaded
+                        document.body.classList.add('loaded');
+                    }, 500);
+                    
+                    // Additional check every 100ms for the first 2 seconds
+                    let checks = 0;
+                    const intervalId = setInterval(() => {
+                        const modal = document.getElementById('imageModal');
+                        if (modal) {
+                            modal.classList.add('hidden');
+                            modal.style.display = 'none';
+                            modal.style.visibility = 'hidden';
+                        }
+                        checks++;
+                        if (checks >= 20) {
+                            clearInterval(intervalId);
+                        }
+                    }, 100);
+
+                    console.log('Patient detail page initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing patient detail:', error);
+                    this.handleError(error.message);
+                }
+            }
+
+            getPatientIdFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('id');
+            }
+
+            async loadPatient(patientId) {
+                try {
+                    this.currentPatient = PatientService.getPatientById(patientId);
+                    
+                    if (!this.currentPatient) {
+                        throw new Error(`Patient with ID ${patientId} not found`);
+                    }
+
+                    // Update page title
+                    document.title = `${this.currentPatient.name} - Patient Detail - Entheory`;
+                } catch (error) {
+                    console.error('Error loading patient:', error);
+                    throw error;
+                }
+            }
+
+            renderPatientHeader() {
+                const patient = this.currentPatient;
+                const avatarColor = PatientService.getPatientAvatarColor(patient);
+                const initials = Utils.getInitials(patient.name);
+
+                document.getElementById('patient-header').innerHTML = `
+                    <div class="patient-header">
+                        <div class="patient-header-content">
+                            <div class="patient-avatar-large" style="background-color: ${avatarColor}">
+                                ${initials}
+                            </div>
+                            <div class="patient-details">
+                                <h1>${Utils.sanitizeHtml(patient.name)}</h1>
+                                <div class="patient-meta-large">
+                                    <div>Age: ${patient.age}</div>
+                                    <div>Gender: ${patient.gender}</div>
+                                    <div>ID: ${patient.id}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStatusCards() {
+                const patient = this.currentPatient;
+                const status = PatientService.formatPatientStatus(patient.treatmentStatus);
+
+                document.getElementById('status-cards').innerHTML = `
+                    <div class="status-card blue">
+                        <h3>Current Diagnosis</h3>
+                        <div class="value">${Utils.sanitizeHtml(patient.diagnosis)} ${patient.stage ? `(${patient.stage})` : ''}</div>
+                    </div>
+                    <div class="status-card green">
+                        <h3>Treatment Status</h3>
+                        <div class="value">${status.text}</div>
+                    </div>
+                    <div class="status-card purple">
+                        <h3>Last Visit</h3>
+                        <div class="value">${Utils.formatDate(patient.lastVisit)}</div>
+                    </div>
+                `;
+            }
+
+            renderTabs() {
+                const tabsHtml = this.tabs.map(tab => `
+                    <button class="patient-tab ${tab.id === this.activeTab ? 'active' : ''}" 
+                            data-tab="${tab.id}" 
+                            onclick="patientDetailController.switchTab('${tab.id}')">
+                        <i class="${tab.icon} mr-2"></i>${tab.label}
+                    </button>
+                `).join('');
+
+                document.getElementById('patient-tabs').innerHTML = tabsHtml;
+            }
+
+            renderTabContent() {
+                const contentContainer = document.getElementById('tab-content-container');
+                const patient = this.currentPatient;
+
+                // Create tab content containers
+                const tabContents = this.tabs.map(tab => `
+                    <div id="tab-${tab.id}" class="tab-content ${tab.id === this.activeTab ? 'active' : ''}">
+                        ${this.renderTabSpecificContent(tab.id, patient)}
+                    </div>
+                `).join('');
+
+                contentContainer.innerHTML = tabContents;
+                
+                // Add event listeners for image cards after rendering
+                setTimeout(() => {
+                    this.attachImageCardListeners();
+                }, 100);
+            }
+
+            attachImageCardListeners() {
+                const imageCards = document.querySelectorAll('.image-card');
+                console.log('Attaching listeners to', imageCards.length, 'image cards');
+                imageCards.forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const image = card.getAttribute('data-image');
+                        const title = card.getAttribute('data-title');
+                        const date = card.getAttribute('data-date');
+                        console.log('Image card clicked:', { image, title, date });
+                        this.openImageModal(image, title, date);
+                    });
+                });
+            }
+
+            renderTabSpecificContent(tabId, patient) {
+                switch (tabId) {
+                    case 'timeline':
+                        return this.renderTimelineContent(patient);
+                    case 'history':
+                        return this.renderMedicalHistoryContent(patient);
+                    case 'labs':
+                        return this.renderLabResultsContent(patient);
+                    case 'imaging':
+                        return this.renderImagingContent(patient);
+                    case 'genomics':
+                        return this.renderGenomicsContent(patient);
+                    case 'molecular':
+                        return this.renderMolecularContent(patient);
+                    case 'treatment':
+                        return this.renderTreatmentContent(patient);
+                    default:
+                        return '<p class="text-gray-500">Content not available</p>';
+                }
+            }
+
+            renderTimelineContent(patient) {
+                if (!patient.timeline || patient.timeline.length === 0) {
+                    return Components.createEmptyState({
+                        icon: 'fas fa-clock',
+                        title: 'No timeline data',
+                        message: 'No timeline events are available for this patient.'
+                    });
+                }
+
+                const timelineItems = patient.timeline
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .map(item => Components.createTimelineItem(item))
+                    .join('');
+
+                return `
+                    <div class="content-card">
+                        <h3 class="text-xl font-semibold mb-6">Longitudinal History</h3>
+                        <div class="timeline">
+                            ${timelineItems}
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderMedicalHistoryContent(patient) {
+                const history = patient.medicalHistory || {};
+                
+                return `
+                    <div class="space-y-6">
+                        <div class="content-card">
+                            <h3 class="text-xl font-semibold mb-4">Chief Complaint</h3>
+                            <p class="text-gray-700">${Utils.sanitizeHtml(history.chiefComplaint || 'No chief complaint recorded')}</p>
+                        </div>
+                        
+                        <div class="content-card">
+                            <h3 class="text-xl font-semibold mb-4">Past Medical History</h3>
+                            ${this.renderHistoryList(history.pastMedicalHistory)}
+                        </div>
+                        
+                        <div class="content-card">
+                            <h3 class="text-xl font-semibold mb-4">Family History</h3>
+                            ${this.renderHistoryList(history.familyHistory)}
+                        </div>
+                        
+                        <div class="content-card">
+                            <h3 class="text-xl font-semibold mb-4">Social History</h3>
+                            ${this.renderHistoryList(history.socialHistory)}
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderHistoryList(items) {
+                if (!items || items.length === 0) {
+                    return '<p class="text-gray-500">No history recorded</p>';
+                }
+                
+                return `
+                    <ul class="space-y-2">
+                        ${items.map(item => `<li class="flex items-start"><i class="fas fa-circle text-blue-500 text-xs mt-2 mr-3"></i><span class="text-gray-700">${Utils.sanitizeHtml(item)}</span></li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            renderLabResultsContent(patient) {
+                if (!patient.labResults || patient.labResults.length === 0) {
+                    return Components.createEmptyState({
+                        icon: 'fas fa-vial',
+                        title: 'No lab results',
+                        message: 'No laboratory results are available for this patient.'
+                    });
+                }
+
+                const labItems = patient.labResults
+                    .map(result => Components.createLabResultItem(result))
+                    .join('');
+
+                return `
+                    <div class="content-card">
+                        <h3 class="text-xl font-semibold mb-6">Laboratory Results</h3>
+                        <div class="space-y-3">
+                            ${labItems}
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderImagingContent(patient) {
+                if (!patient.imaging || patient.imaging.length === 0) {
+                    return Components.createEmptyState({
+                        icon: 'fas fa-x-ray',
+                        title: 'No imaging studies',
+                        message: 'No imaging studies are available for this patient.'
+                    });
+                }
+
+                const imagingCards = patient.imaging.filter(study => study.image).map(study => `
+                    <div class="image-card" data-image="${study.image}" data-title="${study.type}" data-date="${study.date}">
+                        <img src="${study.image}" alt="${study.type}" loading="lazy" onerror="this.style.display='none'">
+                        <div class="image-info">
+                            <div class="image-title">${Utils.sanitizeHtml(study.type)}</div>
+                            <div class="image-meta">${Utils.formatDate(study.date)}</div>
+                            <p class="text-sm text-gray-600 mt-2">${Utils.sanitizeHtml(study.findings || study.impression)}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="content-card">
+                        <h3 class="text-xl font-semibold mb-6">Imaging Studies</h3>
+                        <div class="image-grid">
+                            ${imagingCards}
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderGenomicsContent(patient) {
+                if (!patient.genomics) {
+                    return Components.createEmptyState({
+                        icon: 'fas fa-dna',
+                        title: 'No genomics data',
+                        message: 'No genomics information is available for this patient.'
+                    });
+                }
+
+                const genomics = patient.genomics;
+                const sections = [
+                    { key: 'germlineGenetics', title: 'Germline Genetics', icon: 'fas fa-user-shield' },
+                    { key: 'somaticMutations', title: 'Somatic Mutations', icon: 'fas fa-random' },
+                    { key: 'copyNumberVariations', title: 'Copy Number Variations', icon: 'fas fa-copy' },
+                    { key: 'msiTmb', title: 'MSI/TMB Analysis', icon: 'fas fa-chart-bar' },
+                    { key: 'pharmacogenomics', title: 'Pharmacogenomics', icon: 'fas fa-pills' }
+                ];
+
+                return sections.map(section => {
+                    const data = genomics[section.key];
+                    if (!data || data.length === 0) return '';
+
+                    const items = data.map(item => this.renderGenomicsItem(item, section.key)).join('');
+                    
+                    return `
+                        <div class="genomics-section">
+                            <h4><i class="${section.icon} mr-2"></i>${section.title}</h4>
+                            <div class="space-y-3">
+                                ${items}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderGenomicsItem(item, type) {
+                const getStatus = (item, type) => {
+                    if (type === 'germlineGenetics') return item.result === 'Wild-type' ? 'normal' : 'variant';
+                    if (type === 'somaticMutations') return item.pathogenicity === 'Pathogenic' ? 'pathogenic' : 'normal';
+                    return 'normal';
+                };
+
+                const status = getStatus(item, type);
+                const statusClass = status === 'pathogenic' ? 'status-high' : status === 'variant' ? 'status-low' : 'status-normal';
+
+                return `
+                    <div class="gene-card">
+                        <div class="gene-header">
+                            <span class="gene-name">${Utils.sanitizeHtml(item.gene || item.test || 'Unknown')}</span>
+                            <span class="gene-status ${statusClass}">${Utils.sanitizeHtml(item.result || item.pathogenicity || 'Normal')}</span>
+                        </div>
+                        <div class="gene-details">
+                            ${this.renderGenomicsDetails(item, type)}
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderGenomicsDetails(item, type) {
+                const details = [];
+                
+                if (item.mutation) details.push(`Mutation: ${item.mutation}`);
+                if (item.vaf) details.push(`VAF: ${item.vaf}`);
+                if (item.significance) details.push(`Significance: ${item.significance}`);
+                if (item.therapeuticImplication) details.push(`Therapeutic: ${item.therapeuticImplication}`);
+                if (item.interpretation) details.push(`Interpretation: ${item.interpretation}`);
+                if (item.recommendation) details.push(`Recommendation: ${item.recommendation}`);
+                
+                return details.map(detail => `<div>${Utils.sanitizeHtml(detail)}</div>`).join('');
+            }
+
+            renderMolecularContent(patient) {
+                if (!patient.molecular) {
+                    return Components.createEmptyState({
+                        icon: 'fas fa-atom',
+                        title: 'No molecular data',
+                        message: 'No molecular profile information is available for this patient.'
+                    });
+                }
+
+                const molecular = patient.molecular;
+                let content = `<div class="content-card">
+                    <h3 class="text-xl font-semibold mb-6">Molecular Profile</h3>`;
+
+                // Genetic Testing
+                if (molecular.geneticTesting && molecular.geneticTesting.length > 0) {
+                    content += `
+                        <div class="molecular-section">
+                            <h4 class="molecular-section-title">Genetic Testing</h4>
+                            <div class="molecular-grid">
+                                ${molecular.geneticTesting.map(test => `
+                                    <div class="molecular-card">
+                                        <div class="molecular-header">
+                                            <span class="molecular-gene">${Utils.sanitizeHtml(test.gene)}</span>
+                                            <span class="molecular-status ${test.status ? test.status.toLowerCase().replace(' ', '-') : 'unknown'}">${Utils.sanitizeHtml(test.status || 'Unknown')}</span>
+                                        </div>
+                                        <div class="molecular-details">
+                                            <div class="molecular-change">${Utils.sanitizeHtml(test.change)}</div>
+                                            <div class="molecular-significance">${Utils.sanitizeHtml(test.significance)}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>`;
+                }
+
+                // Biomarkers
+                if (molecular.biomarkers && molecular.biomarkers.length > 0) {
+                    content += `
+                        <div class="molecular-section">
+                            <h4 class="molecular-section-title">Biomarkers</h4>
+                            <div class="molecular-grid">
+                                ${molecular.biomarkers.map(marker => `
+                                    <div class="molecular-card">
+                                        <div class="molecular-header">
+                                            <span class="molecular-marker">${Utils.sanitizeHtml(marker.marker)}</span>
+                                            <span class="molecular-result ${marker.result ? marker.result.toLowerCase().replace(' ', '-') : 'unknown'}">${Utils.sanitizeHtml(marker.result || 'Unknown')}</span>
+                                        </div>
+                                        <div class="molecular-details">
+                                            <div class="molecular-significance">${Utils.sanitizeHtml(marker.significance)}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>`;
+                }
+
+                // Immunohistochemistry
+                if (molecular.immunohistochemistry && molecular.immunohistochemistry.length > 0) {
+                    content += `
+                        <div class="molecular-section">
+                            <h4 class="molecular-section-title">Immunohistochemistry</h4>
+                            <div class="molecular-grid">
+                                ${molecular.immunohistochemistry.map(ihc => `
+                                    <div class="molecular-card">
+                                        <div class="molecular-header">
+                                            <span class="molecular-marker">${Utils.sanitizeHtml(ihc.marker)}</span>
+                                            <span class="molecular-expression ${ihc.expression ? ihc.expression.toLowerCase().replace(' ', '-') : 'unknown'}">${Utils.sanitizeHtml(ihc.expression || 'Unknown')}</span>
+                                        </div>
+                                        <div class="molecular-details">
+                                            <div class="molecular-percentage">${Utils.sanitizeHtml(ihc.percentage)}</div>
+                                            <div class="molecular-interpretation">${Utils.sanitizeHtml(ihc.interpretation)}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>`;
+                }
+
+                content += `</div>`;
+                return content;
+            }
+
+            renderTreatmentContent(patient) {
+                if (!patient.treatmentResponse) {
+                    return Components.createEmptyState({
+                        icon: 'fas fa-heartbeat',
+                        title: 'No treatment data',
+                        message: 'No treatment response information is available for this patient.'
+                    });
+                }
+
+                const treatment = patient.treatmentResponse;
+                let content = `<div class="content-card">
+                    <h3 class="text-xl font-semibold mb-6">Treatment Response</h3>`;
+
+                // Treatment Responses
+                if (treatment.responses && treatment.responses.length > 0) {
+                    content += `
+                        <div class="treatment-section">
+                            <h4 class="treatment-section-title">Treatment Responses</h4>
+                            <div class="treatment-timeline">
+                                ${treatment.responses.map(response => `
+                                    <div class="treatment-response-card">
+                                        <div class="treatment-response-header">
+                                            <div class="treatment-date">${Utils.formatDate(response.date)}</div>
+                                            <div class="treatment-assessment ${response.assessment ? response.assessment.toLowerCase().replace(' ', '-') : 'unknown'}">${Utils.sanitizeHtml(response.assessment || 'Unknown')}</div>
+                                        </div>
+                                        <div class="treatment-response-details">
+                                            <div class="treatment-change">${Utils.sanitizeHtml(response.percent_change)}</div>
+                                            <div class="treatment-notes">${Utils.sanitizeHtml(response.notes)}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>`;
+                }
+
+                // Side Effects
+                if (treatment.sideEffects && treatment.sideEffects.length > 0) {
+                    content += `
+                        <div class="treatment-section">
+                            <h4 class="treatment-section-title">Side Effects</h4>
+                            <div class="side-effects-grid">
+                                ${treatment.sideEffects.map(effect => `
+                                    <div class="side-effect-card">
+                                        <div class="side-effect-header">
+                                            <span class="side-effect-name">${Utils.sanitizeHtml(effect.effect)}</span>
+                                            <span class="side-effect-grade grade-${effect.grade}">${Utils.sanitizeHtml(effect.grade)}</span>
+                                        </div>
+                                        <div class="side-effect-details">
+                                            <div class="side-effect-status">${Utils.sanitizeHtml(effect.status)}</div>
+                                            <div class="side-effect-onset">Onset: ${Utils.formatDate(effect.onset)}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>`;
+                }
+
+                // Performance Status
+                if (treatment.performanceStatus && treatment.performanceStatus.length > 0) {
+                    content += `
+                        <div class="treatment-section">
+                            <h4 class="treatment-section-title">Performance Status</h4>
+                            <div class="performance-timeline">
+                                ${treatment.performanceStatus.map(status => `
+                                    <div class="performance-card">
+                                        <div class="performance-header">
+                                            <div class="performance-date">${Utils.formatDate(status.date)}</div>
+                                            <div class="performance-ecog">ECOG ${status.ecog}</div>
+                                        </div>
+                                        <div class="performance-details">
+                                            <div class="performance-karnofsky">Karnofsky: ${status.karnofsky}%</div>
+                                            <div class="performance-notes">${Utils.sanitizeHtml(status.notes)}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>`;
+                }
+
+                content += `</div>`;
+                return content;
+            }
+
+            switchTab(tabId) {
+                // Update active tab
+                this.activeTab = tabId;
+                
+                // Update tab buttons
+                document.querySelectorAll('.patient-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+                
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            }
+
+            openImageModal(imageSrc, title, date) {
+                console.log('⚠️ openImageModal called with:', { imageSrc, title, date });
+                console.trace('📍 Modal opened from:');
+                
+                // TEMPORARY: Completely block modal for debugging
+                console.log('🚫 Modal blocked for debugging');
+                return;
+                
+                if (!imageSrc || imageSrc === 'undefined' || imageSrc === '') {
+                    console.warn('No valid image source provided to openImageModal');
+                    return;
+                }
+                
+                // Don't open modal during initialization
+                if (!this.currentPatient || !document.body.classList.contains('loaded')) {
+                    console.log('Blocking modal during initialization');
+                    return;
+                }
+                
+                document.getElementById('modalImage').src = imageSrc;
+                document.getElementById('modalTitle').textContent = title || 'Medical Image';
+                document.getElementById('modalDate').textContent = date ? Utils.formatDate(date) : 'No date available';
+                document.getElementById('imageModal').classList.remove('hidden');
+            }
+
+            static closeImageModal() {
+                const modal = document.getElementById('imageModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.style.display = 'none';
+                    modal.style.visibility = 'hidden';
+                }
+            }
+
+            handleError(message) {
+                const mainContent = document.querySelector('.max-w-7xl');
+                mainContent.innerHTML = `
+                    <div class="text-center py-16">
+                        ${Components.createErrorMessage(message)}
+                        <a href="/clinician-dashboard.html" class="btn-primary mt-4">
+                            <i class="fas fa-arrow-left mr-2"></i>Return to Dashboard
+                        </a>
+                    </div>
+                `;
+                Utils.showToast(message, 'error');
+            }
+        }
+
+        // Initialize patient detail page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            window.patientDetailController = new PatientDetailController();
+            patientDetailController.init();
+        });
+    </script>
+</body>
+</html>

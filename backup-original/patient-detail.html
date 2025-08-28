@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Deep Dive - Entheory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="/js/patientData.js"></script>
+    <style>
+        /* Liquid Glass Navigation Bar */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.4) 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0.1) 100%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .glass-nav:hover {
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        /* Add subtle animation for liquid effect */
+        @keyframes liquidFlow {
+            0%, 100% { 
+                background-position: 0% 50%; 
+            }
+            50% { 
+                background-position: 100% 50%; 
+            }
+        }
+        
+        .glass-nav::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.6) 50%, 
+                transparent 100%);
+            background-size: 200% 100%;
+            animation: liquidFlow 4s ease-in-out infinite;
+        }
+        
+        /* Enhanced glass morphism for better visibility */
+        .glass-nav * {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Navigation Icons */
+        .nav-icon {
+            transition: all 0.2s ease;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        .nav-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .nav-icon.active {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Patient Data Tabs */
+        .patient-tab {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            color: #6b7280;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .patient-tab:hover {
+            color: #374151;
+            border-bottom-color: #d1d5db;
+        }
+        
+        .patient-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        /* Lab Value Cards */
+        .lab-value {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .lab-value.high {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .lab-value.low {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .lab-value.normal {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        /* Imaging Study Cards */
+        .imaging-study {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+        
+        .imaging-study:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Biomarker Cards */
+        .biomarker-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .biomarker-positive {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .biomarker-negative {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Timeline Styles */
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 13px;
+            top: 20px;
+            width: 2px;
+            bottom: -20px;
+            background: #e5e7eb;
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        /* Back Button */
+        .back-button {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .back-button:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Liquid Glass Navigation Bar -->
+    <nav class="glass-nav fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <!-- Entheory Logo -->
+                <div class="flex items-center">
+                    <img src="/images/logo.svg" alt="Entheory" class="h-8 w-auto">
+                </div>
+                
+                <!-- Navigation Icons -->
+                <div class="flex items-center space-x-6">
+                    <a href="/medical-search.html" class="nav-icon" title="Medical Search">
+                        <img src="/images/icon.png" alt="Search" class="w-6 h-6">
+                    </a>
+                    <a href="/clinician-dashboard.html" class="nav-icon active" title="Patient Dashboard">
+                        <i class="fas fa-user-md text-gray-700 text-lg"></i>
+                    </a>
+                    <a href="#" class="nav-icon" title="Analytics">
+                        <i class="fas fa-chart-line text-gray-700 text-lg"></i>
+                    </a>
+                    <a href="#" class="nav-icon" title="Reports">
+                        <i class="fas fa-file-medical text-gray-700 text-lg"></i>
+                    </a>
+                    <a href="#" class="nav-icon" title="Settings">
+                        <i class="fas fa-cog text-gray-700 text-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Spacer for fixed navigation -->
+    <div class="h-16"></div>
+
+    <div class="max-w-7xl mx-auto px-6 pt-8">
+        <!-- Back Button and Header -->
+        <div class="mb-8 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button onclick="goBack()" class="back-button flex items-center space-x-2">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Dashboard</span>
+                </button>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900" style="font-family: 'Poppins', sans-serif;" id="page-title">Patient Deep Dive</h1>
+                    <p class="text-gray-600">Comprehensive clinical analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Header -->
+        <div class="content-card mb-6">
+            <div class="flex items-center">
+                <div class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mr-6">
+                    <span id="patient-initials">--</span>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900" id="patient-name">Patient Name</h2>
+                    <div class="flex items-center space-x-6 text-base text-gray-600 mt-2">
+                        <span id="patient-age">Age: --</span>
+                        <span id="patient-gender">Gender: --</span>
+                        <span id="patient-id">ID: --</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Current Status -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-blue-50 rounded-lg p-6">
+                    <div class="text-sm text-blue-600 font-medium mb-1">Current Diagnosis</div>
+                    <div class="text-xl font-semibold text-blue-900" id="current-diagnosis">--</div>
+                </div>
+                <div class="bg-green-50 rounded-lg p-6">
+                    <div class="text-sm text-green-600 font-medium mb-1">Treatment Status</div>
+                    <div class="text-xl font-semibold text-green-900" id="treatment-status">--</div>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-6">
+                    <div class="text-sm text-purple-600 font-medium mb-1">Last Visit</div>
+                    <div class="text-xl font-semibold text-purple-900" id="last-visit">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comprehensive Patient Data Tabs -->
+        <div class="content-card">
+            <div class="border-b border-gray-200 mb-6">
+                <nav class="-mb-px flex space-x-8 overflow-x-auto">
+                    <button class="patient-tab active whitespace-nowrap" data-tab="timeline" onclick="switchTab('timeline')">
+                        <i class="fas fa-history mr-2"></i>Timeline
+                    </button>
+                    <button class="patient-tab whitespace-nowrap" data-tab="medical-history" onclick="switchTab('medical-history')">
+                        <i class="fas fa-file-medical-alt mr-2"></i>Medical History
+                    </button>
+                    <button class="patient-tab whitespace-nowrap" data-tab="lab-results" onclick="switchTab('lab-results')">
+                        <i class="fas fa-flask mr-2"></i>Lab Results
+                    </button>
+                    <button class="patient-tab whitespace-nowrap" data-tab="imaging" onclick="switchTab('imaging')">
+                        <i class="fas fa-x-ray mr-2"></i>Imaging
+                    </button>
+                    <button class="patient-tab whitespace-nowrap" data-tab="genomics" onclick="switchTab('genomics')">
+                        <i class="fas fa-dna mr-2"></i>Genomics
+                    </button>
+                    <button class="patient-tab whitespace-nowrap" data-tab="molecular" onclick="switchTab('molecular')">
+                        <i class="fas fa-microscope mr-2"></i>Molecular Profile
+                    </button>
+                    <button class="patient-tab whitespace-nowrap" data-tab="treatment" onclick="switchTab('treatment')">
+                        <i class="fas fa-pills mr-2"></i>Treatment Response
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Timeline Tab -->
+            <div id="timeline-tab" class="tab-content">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-8">Longitudinal History</h3>
+                <div id="patient-timeline" class="space-y-8">
+                    <!-- Timeline items will be populated here -->
+                </div>
+            </div>
+
+            <!-- Medical History Tab -->
+            <div id="medical-history-tab" class="tab-content hidden">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-8">Comprehensive Medical History</h3>
+                <div class="space-y-8">
+                    <!-- Chief Complaint -->
+                    <div class="bg-red-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-red-900 mb-4">Chief Complaint & Presentation</h4>
+                        <div id="chief-complaint" class="text-red-800 text-base">
+                            <!-- Will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Past Medical History -->
+                    <div class="bg-blue-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-blue-900 mb-4">Past Medical History</h4>
+                        <div id="past-medical-history" class="text-blue-800 text-base">
+                            <!-- Will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Family History -->
+                    <div class="bg-purple-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-purple-900 mb-4">Family History</h4>
+                        <div id="family-history" class="text-purple-800 text-base">
+                            <!-- Will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Social History -->
+                    <div class="bg-green-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-green-900 mb-4">Social History</h4>
+                        <div id="social-history" class="text-green-800 text-base">
+                            <!-- Will be populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lab Results Tab -->
+            <div id="lab-results-tab" class="tab-content hidden">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-8">Laboratory Results</h3>
+                <div class="space-y-8">
+                    <!-- Recent Labs -->
+                    <div class="bg-gray-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-gray-900 mb-6">Recent Laboratory Values</h4>
+                        <div id="recent-labs" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Lab values will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Lab Trends -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-gray-900 mb-6">Trending Values</h4>
+                        <div id="lab-trends" class="space-y-6">
+                            <!-- Trending charts will be populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Imaging Tab -->
+            <div id="imaging-tab" class="tab-content hidden">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-8">Imaging Studies</h3>
+                <div id="imaging-studies" class="space-y-8">
+                    <!-- Imaging studies will be populated -->
+                </div>
+            </div>
+
+            <!-- Genomics Tab -->
+            <div id="genomics-tab" class="tab-content hidden">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-8">Genomic Analysis</h3>
+                <div class="space-y-8">
+                    <!-- Germline Genetics -->
+                    <div class="bg-blue-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-blue-900 mb-6">Germline Genetic Testing</h4>
+                        <div id="germline-genetics" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Germline results will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Somatic Mutations -->
+                    <div class="bg-red-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-red-900 mb-6">Somatic Mutations</h4>
+                        <div id="somatic-mutations" class="space-y-6">
+                            <!-- Somatic mutation data will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Copy Number Variations -->
+                    <div class="bg-purple-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-purple-900 mb-6">Copy Number Variations</h4>
+                        <div id="copy-number-variations" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- CNV data will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Microsatellite Instability -->
+                    <div class="bg-green-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-green-900 mb-6">Microsatellite Instability & Tumor Mutational Burden</h4>
+                        <div id="msi-tmb" class="space-y-6">
+                            <!-- MSI/TMB data will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Pharmacogenomics -->
+                    <div class="bg-yellow-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-yellow-900 mb-6">Pharmacogenomics</h4>
+                        <div id="pharmacogenomics" class="space-y-6">
+                            <!-- Pharmacogenomic data will be populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Molecular Profile Tab -->
+            <div id="molecular-tab" class="tab-content hidden">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-8">Molecular Profiling & Biomarkers</h3>
+                <div class="space-y-8">
+                    <!-- Genetic Testing -->
+                    <div class="bg-indigo-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-indigo-900 mb-6">Genetic Testing Results</h4>
+                        <div id="genetic-testing" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Genetic results will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Biomarkers -->
+                    <div class="bg-teal-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-teal-900 mb-6">Tumor Biomarkers</h4>
+                        <div id="biomarkers" class="space-y-6">
+                            <!-- Biomarker data will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Immunohistochemistry -->
+                    <div class="bg-orange-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-orange-900 mb-6">Immunohistochemistry</h4>
+                        <div id="immunohisto" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- IHC results will be populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Response Tab -->
+            <div id="treatment-tab" class="tab-content hidden">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-8">Treatment Response & Outcomes</h3>
+                <div class="space-y-8">
+                    <!-- Response Assessment -->
+                    <div class="bg-green-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-green-900 mb-6">Treatment Response</h4>
+                        <div id="treatment-response" class="space-y-6">
+                            <!-- Response data will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Side Effects -->
+                    <div class="bg-yellow-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-yellow-900 mb-6">Adverse Events & Side Effects</h4>
+                        <div id="side-effects" class="space-y-6">
+                            <!-- Side effects will be populated -->
+                        </div>
+                    </div>
+
+                    <!-- Performance Status -->
+                    <div class="bg-blue-50 rounded-lg p-8">
+                        <h4 class="text-xl font-semibold text-blue-900 mb-6">Performance Status & Quality of Life</h4>
+                        <div id="performance-status" class="space-y-6">
+                            <!-- Performance data will be populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50" onclick="closeImageModal()">
+        <div class="relative max-w-4xl max-h-full p-4" onclick="event.stopPropagation()">
+            <div class="relative bg-white rounded-lg shadow-lg">
+                <div class="flex items-center justify-between p-4 border-b">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">Medical Image</h3>
+                        <p class="text-sm text-gray-600" id="modalDate">Date</p>
+                    </div>
+                    <button onclick="closeImageModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <img id="modalImage" src="" alt="" class="w-full h-auto rounded-lg">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPatient = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPatientFromURL();
+        });
+
+        // Load patient data from URL parameter
+        function loadPatientFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const patientId = urlParams.get('id');
+            
+            if (patientId) {
+                loadPatientData(patientId);
+            } else {
+                // Redirect back to dashboard if no patient ID
+                window.location.href = '/clinician-dashboard.html';
+            }
+        }
+
+        // Load patient data
+        function loadPatientData(patientId) {
+            // Use shared data source directly for consistent UI experience
+            currentPatient = getSamplePatient(patientId);
+            
+            if (currentPatient) {
+                console.log('Loaded patient data:', currentPatient);
+                populatePatientData();
+            } else {
+                console.error('No patient data found for ID:', patientId);
+                // Patient not found, redirect to dashboard
+                window.location.href = '/clinician-dashboard.html';
+            }
+        }
+
+        // Get sample patient data
+        function getSamplePatient(patientId) {
+            return window.getPatientById(patientId);
+        }
+
+        // Populate patient data in the UI
+        function populatePatientData() {
+            if (!currentPatient) return;
+
+            // Update page title
+            document.getElementById('page-title').textContent = `${currentPatient.name} - Deep Dive`;
+
+            // Populate patient header
+            document.getElementById('patient-initials').textContent = getInitials(currentPatient.name);
+            document.getElementById('patient-name').textContent = currentPatient.name;
+            document.getElementById('patient-age').textContent = `Age: ${currentPatient.age}`;
+            document.getElementById('patient-gender').textContent = `Gender: ${currentPatient.gender}`;
+            document.getElementById('patient-id').textContent = `ID: ${currentPatient.id}`;
+            
+            document.getElementById('current-diagnosis').textContent = `${currentPatient.diagnosis} (${currentPatient.stage || 'N/A'})`;
+            document.getElementById('treatment-status').textContent = currentPatient.treatmentStatus;
+            document.getElementById('last-visit').textContent = formatDate(currentPatient.lastVisit);
+
+            // Populate timeline
+            displayTimeline(currentPatient.timeline);
+            
+            // Populate comprehensive data
+            populateComprehensiveData(currentPatient);
+        }
+
+        // Go back to dashboard
+        function goBack() {
+            window.location.href = '/clinician-dashboard.html';
+        }
+
+        // Switch between patient data tabs
+        function switchTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.patient-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Activate selected tab
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+        }
+
+        // Display patient timeline
+        function displayTimeline(timeline) {
+            const container = document.getElementById('patient-timeline');
+            container.innerHTML = timeline.map(item => `
+                <div class="timeline-item">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-3">
+                                <span class="text-base font-medium text-gray-600">${formatDate(item.date)}</span>
+                                <span class="ml-4 px-3 py-1 text-sm rounded-full ${getTimelineTypeColor(item.type)}">
+                                    ${item.type}
+                                </span>
+                            </div>
+                            <h4 class="text-xl font-semibold text-gray-900 mb-3">${item.title}</h4>
+                            <p class="text-gray-600 text-base">${item.description}</p>
+                        </div>
+                        <span class="text-sm text-green-600 font-medium">${item.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Populate comprehensive patient data across all tabs (reuse functions from dashboard)
+        function populateComprehensiveData(patient) {
+            if (!patient) return;
+
+            // Populate Medical History Tab
+            if (patient.medicalHistory) {
+                document.getElementById('chief-complaint').innerHTML = `
+                    <p class="leading-relaxed">${patient.medicalHistory.chiefComplaint}</p>
+                `;
+
+                document.getElementById('past-medical-history').innerHTML = `
+                    <ul class="space-y-3">
+                        ${patient.medicalHistory.pastMedicalHistory.map(item => `<li class="flex items-start"><span class="text-blue-600 mr-2">•</span><span>${item}</span></li>`).join('')}
+                    </ul>
+                `;
+
+                document.getElementById('family-history').innerHTML = `
+                    <ul class="space-y-3">
+                        ${patient.medicalHistory.familyHistory.map(item => `<li class="flex items-start"><span class="text-purple-600 mr-2">•</span><span>${item}</span></li>`).join('')}
+                    </ul>
+                `;
+
+                document.getElementById('social-history').innerHTML = `
+                    <ul class="space-y-3">
+                        ${patient.medicalHistory.socialHistory.map(item => `<li class="flex items-start"><span class="text-green-600 mr-2">•</span><span>${item}</span></li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            // Populate Lab Results Tab
+            if (patient.labResults) {
+                document.getElementById('recent-labs').innerHTML = patient.labResults.map(lab => `
+                    <div class="lab-value ${lab.status}">
+                        <div class="text-base font-medium text-gray-900 mb-2">${lab.name}</div>
+                        <div class="text-3xl font-bold ${getLabValueColor(lab.status)} mb-2">${lab.value}</div>
+                        <div class="text-sm text-gray-600 mb-1">${lab.unit}</div>
+                        <div class="text-sm text-gray-500 mb-2">Normal: ${lab.normal}</div>
+                        <div class="text-sm font-medium ${getLabStatusColor(lab.status)}">${lab.status.toUpperCase()}</div>
+                    </div>
+                `).join('');
+
+                // Add trending information
+                document.getElementById('lab-trends').innerHTML = `
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <div class="text-base text-gray-600 mb-4">Recent lab trends show:</div>
+                        <ul class="space-y-2">
+                            <li class="flex items-start"><span class="text-gray-400 mr-2">•</span><span>Hemoglobin trending downward (monitoring required)</span></li>
+                            <li class="flex items-start"><span class="text-gray-400 mr-2">•</span><span>CEA slightly elevated but stable</span></li>
+                            <li class="flex items-start"><span class="text-gray-400 mr-2">•</span><span>Renal function maintained within normal limits</span></li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Populate other tabs using the same logic as dashboard...
+            // (Copying the imaging, molecular, and treatment response population logic)
+            
+            // Populate Imaging Tab
+            if (patient.imaging) {
+                document.getElementById('imaging-studies').innerHTML = patient.imaging.map(study => `
+                    <div class="imaging-study">
+                        <div class="flex items-start justify-between mb-6">
+                            <div>
+                                <h5 class="text-xl font-semibold text-gray-900">${study.type}</h5>
+                                <p class="text-base text-gray-600">${formatDate(study.date)}</p>
+                            </div>
+                            <span class="px-4 py-2 text-sm rounded-full bg-blue-100 text-blue-800">
+                                <i class="fas fa-x-ray mr-2"></i>Imaging
+                            </span>
+                        </div>
+                        
+                        ${study.image ? `
+                            <div class="mb-6">
+                                <h6 class="text-base font-medium text-gray-700 mb-3">Medical Image:</h6>
+                                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                                    <img 
+                                        src="${study.image}" 
+                                        alt="${study.type} - ${formatDate(study.date)}"
+                                        class="w-full max-w-md mx-auto rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                                        onclick="openImageModal('${study.image}', '${study.type}', '${formatDate(study.date)}')"
+                                    />
+                                    <p class="text-sm text-gray-500 text-center mt-2">Click to enlarge</p>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h6 class="text-base font-medium text-gray-700 mb-2">Findings:</h6>
+                                <p class="text-base text-gray-600">${study.findings}</p>
+                            </div>
+                            <div>
+                                <h6 class="text-base font-medium text-gray-700 mb-2">Impression:</h6>
+                                <p class="text-base font-semibold text-gray-800">${study.impression}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Populate Molecular Profile Tab
+            if (patient.molecular) {
+                // Genetic Testing
+                if (patient.molecular.geneticTesting) {
+                    document.getElementById('genetic-testing').innerHTML = patient.molecular.geneticTesting.map(test => `
+                        <div class="biomarker-card ${test.status === 'Pathogenic' ? 'biomarker-positive' : 'biomarker-negative'}">
+                            <div class="text-base font-medium text-gray-900 mb-2">${test.gene}</div>
+                            <div class="text-base text-gray-700 mb-3">${test.mutation}</div>
+                            <span class="text-sm px-3 py-1 rounded-full ${test.status === 'Pathogenic' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                ${test.status}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+
+                // Biomarkers
+                if (patient.molecular.biomarkers) {
+                    document.getElementById('biomarkers').innerHTML = patient.molecular.biomarkers.map(marker => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h6 class="text-base font-semibold text-gray-900">${marker.marker}</h6>
+                                <span class="text-base font-medium text-blue-600">${marker.result || marker.expression}</span>
+                            </div>
+                            <p class="text-sm text-gray-600">${marker.significance}</p>
+                        </div>
+                    `).join('');
+                }
+
+                // Immunohistochemistry
+                if (patient.molecular.immunohistochemistry) {
+                    document.getElementById('immunohisto').innerHTML = patient.molecular.immunohistochemistry.map(ihc => `
+                        <div class="biomarker-card ${ihc.result === 'Negative' || ihc.result.includes('Negative') ? 'biomarker-negative' : 'biomarker-positive'}">
+                            <div class="text-base font-medium text-gray-900 mb-2">${ihc.marker}</div>
+                            <div class="text-xl font-bold ${ihc.result === 'Negative' || ihc.result.includes('Negative') ? 'text-green-700' : 'text-red-700'} mb-3">${ihc.result}</div>
+                            <p class="text-sm text-gray-600">${ihc.interpretation}</p>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Populate Genomics Tab
+            if (patient.genomics) {
+                // Germline Genetics
+                if (patient.genomics.germlineGenetics) {
+                    document.getElementById('germline-genetics').innerHTML = patient.genomics.germlineGenetics.map(germline => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h6 class="text-base font-semibold text-gray-900">${germline.gene}</h6>
+                                <span class="px-3 py-1 text-sm rounded-full ${germline.result === 'Wild-type' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                    ${germline.result}
+                                </span>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-sm text-gray-700"><strong>Significance:</strong> ${germline.significance}</p>
+                                <p class="text-sm text-blue-700"><strong>Risk Implication:</strong> ${germline.riskImplication}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Somatic Mutations
+                if (patient.genomics.somaticMutations) {
+                    document.getElementById('somatic-mutations').innerHTML = patient.genomics.somaticMutations.map(mutation => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h6 class="text-lg font-semibold text-gray-900">${mutation.gene}</h6>
+                                <span class="px-3 py-1 text-sm rounded-full ${getPathogenicityColor(mutation.pathogenicity)}">
+                                    ${mutation.pathogenicity}
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-600">Mutation:</span>
+                                    <span class="text-sm text-gray-900 ml-1">${mutation.mutation}</span>
+                                </div>
+                                <div>
+                                    <span class="text-sm font-medium text-gray-600">VAF:</span>
+                                    <span class="text-sm font-semibold text-blue-600 ml-1">${mutation.vaf}</span>
+                                </div>
+                                <div>
+                                    <span class="text-sm font-medium text-gray-600">Consequence:</span>
+                                    <span class="text-sm text-gray-900 ml-1">${mutation.consequence}</span>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 rounded-lg p-3">
+                                <p class="text-sm text-blue-800"><strong>Therapeutic Implication:</strong> ${mutation.therapeuticImplication}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Copy Number Variations
+                if (patient.genomics.copyNumberVariations) {
+                    document.getElementById('copy-number-variations').innerHTML = patient.genomics.copyNumberVariations.map(cnv => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h6 class="text-base font-semibold text-gray-900">${cnv.gene}</h6>
+                                <span class="px-3 py-1 text-sm rounded-full ${cnv.alteration === 'Amplification' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}">
+                                    ${cnv.alteration}
+                                </span>
+                            </div>
+                            <div class="space-y-2 mb-3">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-600">Copy Number:</span>
+                                    <span class="text-sm font-semibold text-purple-600 ml-1">${cnv.copies}</span>
+                                </div>
+                                <p class="text-sm text-gray-700">${cnv.significance}</p>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-3">
+                                <p class="text-sm text-purple-800"><strong>Therapeutic Implication:</strong> ${cnv.therapeuticImplication}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // MSI/TMB
+                if (patient.genomics.msiTmb) {
+                    document.getElementById('msi-tmb').innerHTML = patient.genomics.msiTmb.map(test => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h6 class="text-base font-semibold text-gray-900">${test.test}</h6>
+                                <span class="text-base font-semibold text-green-600">${test.result}</span>
+                            </div>
+                            <div class="space-y-2 mb-3">
+                                <p class="text-sm text-gray-700"><strong>Interpretation:</strong> ${test.interpretation}</p>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-3">
+                                <p class="text-sm text-green-800"><strong>Therapeutic Implication:</strong> ${test.therapeuticImplication}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Pharmacogenomics
+                if (patient.genomics.pharmacogenomics) {
+                    document.getElementById('pharmacogenomics').innerHTML = patient.genomics.pharmacogenomics.map(pgx => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h6 class="text-base font-semibold text-gray-900">${pgx.gene}</h6>
+                                <span class="px-3 py-1 text-sm rounded-full bg-yellow-100 text-yellow-800">
+                                    ${pgx.phenotype}
+                                </span>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-600">Genotype:</span>
+                                    <span class="text-sm font-mono text-gray-900 ml-1">${pgx.genotype}</span>
+                                </div>
+                                <p class="text-sm text-gray-700">${pgx.drugImplication}</p>
+                            </div>
+                            <div class="bg-yellow-50 rounded-lg p-3">
+                                <p class="text-sm text-yellow-800"><strong>Recommendation:</strong> ${pgx.recommendation}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Populate Treatment Response Tab
+            if (patient.treatmentResponse) {
+                // Treatment Response
+                if (patient.treatmentResponse.responses) {
+                    document.getElementById('treatment-response').innerHTML = patient.treatmentResponse.responses.map(response => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-base font-medium text-gray-900">${formatDate(response.date)}</div>
+                                <span class="px-3 py-1 text-sm rounded-full ${getResponseColor(response.assessment)}">
+                                    ${response.assessment}
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <span class="text-gray-600">Tumor Size:</span>
+                                    <span class="font-medium ml-2">${response.tumor_size}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">Change:</span>
+                                    <span class="font-medium ml-2 ${response.percent_change.startsWith('-') ? 'text-green-600' : 'text-red-600'}">${response.percent_change}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Side Effects
+                if (patient.treatmentResponse.sideEffects) {
+                    document.getElementById('side-effects').innerHTML = patient.treatmentResponse.sideEffects.map(effect => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-base font-medium text-gray-900">${effect.effect}</div>
+                                <span class="px-3 py-1 text-sm rounded-full ${getGradeColor(effect.grade)}">
+                                    ${effect.grade}
+                                </span>
+                            </div>
+                            <p class="text-base text-gray-600"><strong>Management:</strong> ${effect.management}</p>
+                        </div>
+                    `).join('');
+                }
+
+                // Performance Status
+                if (patient.treatmentResponse.performanceStatus) {
+                    document.getElementById('performance-status').innerHTML = patient.treatmentResponse.performanceStatus.map(status => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-6">
+                            <div class="text-base font-medium text-gray-900 mb-4">${formatDate(status.date)}</div>
+                            <div class="grid grid-cols-3 gap-6">
+                                <div class="text-center">
+                                    <div class="text-gray-600 mb-2">ECOG</div>
+                                    <div class="text-3xl font-bold text-blue-600">${status.ecog}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-600 mb-2">Karnofsky</div>
+                                    <div class="text-3xl font-bold text-green-600">${status.karnofsky}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-600 mb-2">QoL Score</div>
+                                    <div class="text-3xl font-bold text-purple-600">${status.qol_score}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        function getResponseColor(assessment) {
+            switch (assessment) {
+                case 'Complete Response': return 'bg-green-100 text-green-800';
+                case 'Partial Response': return 'bg-blue-100 text-blue-800';
+                case 'Stable Disease': return 'bg-yellow-100 text-yellow-800';
+                case 'Progressive Disease': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getGradeColor(grade) {
+            switch (grade) {
+                case 'Grade 1': return 'bg-green-100 text-green-800';
+                case 'Grade 2': return 'bg-yellow-100 text-yellow-800';
+                case 'Grade 3': return 'bg-orange-100 text-orange-800';
+                case 'Grade 4': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getPathogenicityColor(pathogenicity) {
+            switch (pathogenicity) {
+                case 'Pathogenic': return 'bg-red-100 text-red-800';
+                case 'Likely Pathogenic': return 'bg-orange-100 text-orange-800';
+                case 'Uncertain Significance': return 'bg-yellow-100 text-yellow-800';
+                case 'Likely Benign': return 'bg-blue-100 text-blue-800';
+                case 'Benign': return 'bg-green-100 text-green-800';
+                case 'Normal': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Helper functions
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function getTimelineTypeColor(type) {
+            switch (type) {
+                case 'Treatment': return 'bg-red-100 text-red-800';
+                case 'Surgery': return 'bg-purple-100 text-purple-800';
+                case 'Imaging': return 'bg-blue-100 text-blue-800';
+                case 'Follow-up': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getLabValueColor(status) {
+            switch (status) {
+                case 'high': return 'text-red-600';
+                case 'low': return 'text-blue-600';
+                case 'normal': return 'text-green-600';
+                default: return 'text-gray-600';
+            }
+        }
+
+        function getLabStatusColor(status) {
+            switch (status) {
+                case 'high': return 'text-red-600';
+                case 'low': return 'text-blue-600';
+                case 'normal': return 'text-green-600';
+                default: return 'text-gray-600';
+            }
+        }
+
+        // Image modal functions
+        function openImageModal(imageSrc, title, date) {
+            document.getElementById('modalImage').src = imageSrc;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalDate').textContent = date;
+            document.getElementById('imageModal').classList.remove('hidden');
+            document.getElementById('imageModal').classList.add('flex');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+            document.getElementById('imageModal').classList.remove('flex');
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
+</body>
+</html>

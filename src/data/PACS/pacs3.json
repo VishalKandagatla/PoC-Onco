@@ -1,0 +1,20 @@
+{
+  "patient_id": "case_3",
+  "imaging_studies": [
+    {
+      "study_id": "case_3_baseline",
+      "modality": "Mammography",
+      "body_site": "Breast",
+      "date": "2025-03-05",
+      "image_file": "pacs/imaging_baseline.png"
+    },
+    {
+      "study_id": "case_3_followup",
+      "modality": "MRI",
+      "body_site": "Breast",
+      "date": "2025-09-10",
+      "image_file": "pacs/imaging_followup.png"
+    }
+  ],
+  "notes": "Mammogram reveals suspicious mass; follow-up MRI shows no residual disease."
+}

@@ -1,0 +1,9 @@
+{
+  "patient_id": "case_3",
+  "sample_type": "Lumpectomy specimen and sentinel node biopsy",
+  "tumor_grade": "Well differentiated (Grade I)",
+  "histology": "Invasive ductal carcinoma.",
+  "infiltration": "Tumor confined to breast; sentinel nodes negative.",
+  "pathology_notes": "Margins free of tumor; ER/PR positive, HER2 negative.",
+  "image_path": "pathology/pathology_image.png"
+}

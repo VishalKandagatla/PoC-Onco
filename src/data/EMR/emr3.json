@@ -1,0 +1,24 @@
+{
+  "patient_id": "case_3",
+  "name": "Rina Saha",
+  "age": 50,
+  "gender": "Female",
+  "state": "West Bengal",
+  "language_family": "Indo\u2011Aryan",
+  "risk_factors": [
+    "Late first pregnancy",
+    "Sedentary lifestyle",
+    "Family history of breast cancer"
+  ],
+  "presenting_complaint": "Palpable lump in right breast.",
+  "clinical_exam": "Firm 2.5 cm mass in upper outer quadrant of right breast; axillary nodes palpable.",
+  "diagnosis": "Breast carcinoma",
+  "stage": "IIA",
+  "hospital_type": "Government cancer institute",
+  "ABHA_integration": false,
+  "insurance": "None (self-financed)",
+  "history": "Two pregnancies, menarche at 13, menopause at 48.",
+  "family_history": "Mother diagnosed with breast cancer at 55.",
+  "treatment_plan": "Breast-conserving surgery, adjuvant chemotherapy and radiation, hormonal therapy (tamoxifen).",
+  "outcome": "Stable disease with no recurrence at 1 year."
+}

@@ -1,0 +1,47 @@
+{
+  "resourceType": "Patient",
+  "id": "case1-oral-squamous",
+  "identifier": [
+    {
+      "system": "https://abdm.gov.in/abha",
+      "value": "SYNTHETIC-CASE1_ORAL_SQUAMOUS"
+    }
+  ],
+  "name": [
+    {
+      "use": "official",
+      "family": "Kumar",
+      "given": ["Rajesh"]
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1965-03-15",
+  "address": [
+    {
+      "use": "home",
+      "line": ["45 MG Road"],
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "postalCode": "400001",
+      "country": "IN"
+    }
+  ],
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+919876543210",
+      "use": "mobile"
+    },
+    {
+      "system": "email",
+      "value": "rajesh.kumar@email.com"
+    }
+  ],
+  "cancerType": {
+    "primary": "Oral Squamous Cell Carcinoma",
+    "stage": "III",
+    "histology": "Moderately differentiated squamous cell carcinoma",
+    "grade": "2",
+    "diagnosisDate": "2023-11-15"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "patient_id": "case_1",
+  "admission_date": "2025-01-15",
+  "discharge_date": "2025-01-25",
+  "ward": "Head & Neck Oncology",
+  "room_type": "General ward",
+  "insurance_details": "Ayushman Bharat",
+  "billing_account": {
+    "expected_cost": 150000,
+    "payment_status": "pending"
+  },
+  "ABHA_integration": true,
+  "notes": "Administrative information for the patient's hospital stay."
+}

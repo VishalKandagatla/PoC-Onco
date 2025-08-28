@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinician Dashboard - Entheory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="/js/patientData.js"></script>
+    <style>
+        /* Liquid Glass Navigation Bar */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.4) 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0.1) 100%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .glass-nav:hover {
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        /* Add subtle animation for liquid effect */
+        @keyframes liquidFlow {
+            0%, 100% { 
+                background-position: 0% 50%; 
+            }
+            50% { 
+                background-position: 100% 50%; 
+            }
+        }
+        
+        .glass-nav::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.6) 50%, 
+                transparent 100%);
+            background-size: 200% 100%;
+            animation: liquidFlow 4s ease-in-out infinite;
+        }
+        
+        /* Enhanced glass morphism for better visibility */
+        .glass-nav * {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Navigation Links */
+        .nav-link {
+            transition: all 0.2s ease;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Patient Cards */
+        .patient-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .patient-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Timeline Styles */
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 13px;
+            top: 20px;
+            width: 2px;
+            bottom: -20px;
+            background: #e5e7eb;
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        /* Search Container */
+        .search-container {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card.blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+        
+        .stat-card.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .stat-card.purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+        
+        .stat-card.orange {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        /* Patient Data Tabs */
+        .patient-tab {
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            color: #6b7280;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .patient-tab:hover {
+            color: #374151;
+            border-bottom-color: #d1d5db;
+        }
+        
+        .patient-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+
+        /* Lab Value Cards */
+        .lab-value {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .lab-value.high {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .lab-value.low {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .lab-value.normal {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        /* Imaging Study Cards */
+        .imaging-study {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+        
+        .imaging-study:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Biomarker Cards */
+        .biomarker-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .biomarker-positive {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .biomarker-negative {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Liquid Glass Navigation Bar -->
+    <nav class="glass-nav fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <!-- Entheory Logo -->
+                <div class="flex items-center">
+                    <img src="/images/logo.svg" alt="Entheory" class="h-8 w-auto">
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="flex items-center space-x-6">
+                    <a href="/medical-search.html" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        Medical Search
+                    </a>
+                    <a href="/clinician-dashboard.html" class="nav-link text-blue-600 font-semibold">
+                        Patient Dashboard
+                    </a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        Analytics
+                    </a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        Reports
+                    </a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Spacer for fixed navigation -->
+    <div class="h-16"></div>
+
+    <div class="max-w-7xl mx-auto px-6 pt-8">
+        <!-- Dashboard Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2" style="font-family: 'Poppins', sans-serif;">Clinician Dashboard</h1>
+            <p class="text-gray-600">Manage patient longitudinal histories and clinical records</p>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card blue">
+                <div class="text-2xl font-bold mb-1" id="total-patients">0</div>
+                <div class="text-sm opacity-90">Total Patients</div>
+            </div>
+            <div class="stat-card green">
+                <div class="text-2xl font-bold mb-1" id="active-cases">0</div>
+                <div class="text-sm opacity-90">Active Cases</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="text-2xl font-bold mb-1" id="recent-visits">0</div>
+                <div class="text-sm opacity-90">Recent Visits</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="text-2xl font-bold mb-1" id="pending-reviews">0</div>
+                <div class="text-sm opacity-90">Pending Reviews</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Patient Search and List -->
+            <div class="lg:col-span-1">
+                <!-- Patient Search -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Find Patient</h3>
+                    <div class="search-container">
+                        <div class="flex items-center">
+                            <input 
+                                type="text" 
+                                id="patient-search" 
+                                placeholder="Search by name, ID, or diagnosis..."
+                                class="flex-1 border-none outline-none text-base text-gray-700 placeholder-gray-400 bg-transparent"
+                                oninput="searchPatients(this.value)"
+                            >
+                            <i class="fas fa-search text-gray-400 ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient List -->
+                <div class="content-card">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Patients</h3>
+                    <div id="patient-list" class="space-y-3 max-h-96 overflow-y-auto">
+                        <!-- Patient cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Patient Details and Timeline -->
+            <div class="lg:col-span-2">
+                <!-- Default State -->
+                <div id="default-view" class="content-card text-center py-12">
+                    <i class="fas fa-user-md text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Select a Patient</h3>
+                    <p class="text-gray-500">Choose a patient from the list to view their longitudinal history</p>
+                </div>
+
+                <!-- Patient Overview -->
+                <div id="patient-overview" class="hidden">
+                    <!-- Patient Header -->
+                    <div class="content-card mb-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center">
+                                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">
+                                    <span id="patient-initials">--</span>
+                                </div>
+                                <div>
+                                    <h2 class="text-2xl font-bold text-gray-900" id="patient-name">Patient Name</h2>
+                                    <div class="flex items-center space-x-4 text-sm text-gray-600 mt-1">
+                                        <span id="patient-age">Age: --</span>
+                                        <span id="patient-gender">Gender: --</span>
+                                        <span id="patient-id">ID: --</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button onclick="closePatientDetail()" class="text-gray-400 hover:text-gray-600 transition">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Current Status -->
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-blue-50 rounded-lg p-4">
+                                <div class="text-sm text-blue-600 font-medium">Current Diagnosis</div>
+                                <div class="text-lg font-semibold text-blue-900" id="current-diagnosis">--</div>
+                            </div>
+                            <div class="bg-green-50 rounded-lg p-4">
+                                <div class="text-sm text-green-600 font-medium">Treatment Status</div>
+                                <div class="text-lg font-semibold text-green-900" id="treatment-status">--</div>
+                            </div>
+                            <div class="bg-purple-50 rounded-lg p-4">
+                                <div class="text-sm text-purple-600 font-medium">Last Visit</div>
+                                <div class="text-lg font-semibold text-purple-900" id="last-visit">--</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Patient Metadata -->
+                    <div class="content-card mb-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6">Patient Metadata</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Clinical Indicators -->
+                            <div class="space-y-4">
+                                <h4 class="text-lg font-medium text-gray-800 mb-3">Clinical Indicators</h4>
+                                <div class="space-y-3" id="clinical-indicators">
+                                    <!-- Will be populated -->
+                                </div>
+                            </div>
+                            
+                            <!-- Key Biomarkers -->
+                            <div class="space-y-4">
+                                <h4 class="text-lg font-medium text-gray-800 mb-3">Key Biomarkers</h4>
+                                <div class="space-y-3" id="key-biomarkers">
+                                    <!-- Will be populated -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Treatment Summary -->
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="text-lg font-medium text-gray-800 mb-3">Treatment Summary</h4>
+                            <div id="treatment-summary" class="bg-gray-50 rounded-lg p-4">
+                                <!-- Will be populated -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Timeline Overview -->
+                    <div class="content-card">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6">Recent Timeline</h3>
+                        <div id="patient-timeline-overview" class="space-y-4">
+                            <!-- Recent timeline items will be populated here -->
+                        </div>
+                        <div class="mt-4 text-center">
+                            <button onclick="openPatientDeepDive()" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                View Complete History <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let patients = [];
+        let currentPatient = null;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPatients();
+            updateStats();
+        });
+
+        // Load patient data
+        function loadPatients() {
+            // Use shared data source directly for consistent UI experience
+            loadSamplePatients();
+        }
+
+        // Load sample patient data
+        function loadSamplePatients() {
+            patients = window.getAllPatients();
+            displayPatients(patients);
+            updateStats();
+        }
+
+        // Display patients in the list
+        function displayPatients(patientList) {
+            const container = document.getElementById('patient-list');
+            container.innerHTML = patientList.map(patient => `
+                <div class="patient-card" onclick="selectPatient('${patient.id}')">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                            ${getInitials(patient.name)}
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-semibold text-gray-900">${patient.name}</div>
+                            <div class="text-sm text-gray-600">${patient.diagnosis}</div>
+                            <div class="text-xs text-gray-500 mt-1">Last visit: ${formatDate(patient.lastVisit)}</div>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-block px-2 py-1 text-xs rounded-full ${getStatusColor(patient.treatmentStatus)}">
+                                ${patient.treatmentStatus}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Search patients
+        function searchPatients(query) {
+            if (!query.trim()) {
+                displayPatients(patients);
+                return;
+            }
+            
+            const filtered = patients.filter(patient => 
+                patient.name.toLowerCase().includes(query.toLowerCase()) ||
+                patient.id.toLowerCase().includes(query.toLowerCase()) ||
+                patient.diagnosis.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            displayPatients(filtered);
+        }
+
+        // Select and display patient overview
+        function selectPatient(patientId) {
+            currentPatient = patients.find(p => p.id === patientId);
+            if (!currentPatient) return;
+
+            // Hide default view, show patient overview
+            document.getElementById('default-view').classList.add('hidden');
+            document.getElementById('patient-overview').classList.remove('hidden');
+
+            // Populate patient header
+            document.getElementById('patient-initials').textContent = getInitials(currentPatient.name);
+            document.getElementById('patient-name').textContent = currentPatient.name;
+            document.getElementById('patient-age').textContent = `Age: ${currentPatient.age}`;
+            document.getElementById('patient-gender').textContent = `Gender: ${currentPatient.gender}`;
+            document.getElementById('patient-id').textContent = `ID: ${currentPatient.id}`;
+            
+            document.getElementById('current-diagnosis').textContent = `${currentPatient.diagnosis} (${currentPatient.stage || 'N/A'})`;
+            document.getElementById('treatment-status').textContent = currentPatient.treatmentStatus;
+            document.getElementById('last-visit').textContent = formatDate(currentPatient.lastVisit);
+
+            // Populate recent timeline overview (last 3 items)
+            displayTimelineOverview(currentPatient.timeline);
+            
+            // Populate patient metadata
+            populatePatientMetadata(currentPatient);
+        }
+
+        // Display recent timeline overview
+        function displayTimelineOverview(timeline) {
+            const container = document.getElementById('patient-timeline-overview');
+            const recentItems = timeline.slice(0, 3); // Show only the 3 most recent items
+            
+            container.innerHTML = recentItems.map(item => `
+                <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas ${getTimelineIcon(item.type)} text-blue-600 text-xs"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">${item.title}</div>
+                            <div class="text-sm text-gray-600">${formatDate(item.date)}</div>
+                        </div>
+                    </div>
+                    <span class="text-xs text-green-600 font-medium">${item.status}</span>
+                </div>
+            `).join('');
+        }
+
+        // Open patient deep dive page
+        function openPatientDeepDive() {
+            if (!currentPatient) return;
+            
+            // Create deep dive URL with patient ID
+            const deepDiveUrl = `/patient-detail.html?id=${currentPatient.id}`;
+            
+            // Open in same window
+            window.location.href = deepDiveUrl;
+        }
+
+        // Populate patient metadata overview
+        function populatePatientMetadata(patient) {
+            if (!patient) return;
+
+            // Clinical Indicators
+            const clinicalIndicators = [];
+            
+            // Add stage and grade info
+            if (patient.stage) {
+                clinicalIndicators.push({
+                    label: 'Cancer Stage',
+                    value: patient.stage,
+                    type: 'stage'
+                });
+            }
+
+            // Add risk factors from medical history
+            if (patient.medicalHistory) {
+                const riskFactors = [];
+                if (patient.medicalHistory.socialHistory) {
+                    patient.medicalHistory.socialHistory.forEach(item => {
+                        if (item.toLowerCase().includes('smok')) {
+                            riskFactors.push('Tobacco Use');
+                        }
+                        if (item.toLowerCase().includes('alcohol')) {
+                            riskFactors.push('Alcohol Use');
+                        }
+                    });
+                }
+                if (riskFactors.length > 0) {
+                    clinicalIndicators.push({
+                        label: 'Risk Factors',
+                        value: riskFactors.join(', '),
+                        type: 'risk'
+                    });
+                }
+            }
+
+            // Add performance status if available
+            if (patient.treatmentResponse?.performanceStatus?.length > 0) {
+                const latestPS = patient.treatmentResponse.performanceStatus[0];
+                clinicalIndicators.push({
+                    label: 'ECOG Status',
+                    value: latestPS.ecog,
+                    type: 'performance'
+                });
+            }
+
+            document.getElementById('clinical-indicators').innerHTML = clinicalIndicators.map(indicator => `
+                <div class="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-200">
+                    <span class="text-sm font-medium text-gray-700">${indicator.label}</span>
+                    <span class="text-sm font-semibold ${getMetadataColor(indicator.type)}">${indicator.value}</span>
+                </div>
+            `).join('');
+
+            // Key Biomarkers
+            const keyBiomarkers = [];
+            
+            if (patient.molecular?.biomarkers) {
+                patient.molecular.biomarkers.forEach(marker => {
+                    keyBiomarkers.push({
+                        name: marker.marker,
+                        value: marker.result || marker.expression,
+                        significance: marker.significance
+                    });
+                });
+            }
+
+            if (patient.molecular?.geneticTesting) {
+                patient.molecular.geneticTesting.forEach(test => {
+                    if (test.status === 'Pathogenic') {
+                        keyBiomarkers.push({
+                            name: test.gene,
+                            value: 'Mutated',
+                            significance: 'Pathogenic mutation detected'
+                        });
+                    }
+                });
+            }
+
+            document.getElementById('key-biomarkers').innerHTML = keyBiomarkers.length > 0 ? 
+                keyBiomarkers.slice(0, 3).map(marker => `
+                    <div class="bg-white rounded-lg border border-gray-200 p-3">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">${marker.name}</span>
+                            <span class="text-sm font-semibold text-blue-600">${marker.value}</span>
+                        </div>
+                        <p class="text-xs text-gray-500">${marker.significance}</p>
+                    </div>
+                `).join('') : 
+                '<div class="text-sm text-gray-500 italic">No biomarker data available</div>';
+
+            // Treatment Summary
+            let treatmentSummary = '';
+            
+            if (patient.treatmentResponse?.responses?.length > 0) {
+                const latestResponse = patient.treatmentResponse.responses[0];
+                treatmentSummary += `<strong>Latest Response:</strong> ${latestResponse.assessment}`;
+                
+                if (latestResponse.percent_change !== '0%') {
+                    const changeColor = latestResponse.percent_change.startsWith('-') ? 'text-green-600' : 'text-red-600';
+                    treatmentSummary += ` <span class="${changeColor}">(${latestResponse.percent_change})</span>`;
+                }
+            }
+
+            if (patient.treatmentResponse?.sideEffects?.length > 0) {
+                const activeSideEffects = patient.treatmentResponse.sideEffects.filter(se => 
+                    !se.management.toLowerCase().includes('resolved')
+                );
+                if (activeSideEffects.length > 0) {
+                    treatmentSummary += `<br><strong>Active Side Effects:</strong> ${activeSideEffects.length} ongoing`;
+                }
+            }
+
+            if (!treatmentSummary) {
+                treatmentSummary = '<em class="text-gray-500">No treatment response data available</em>';
+            }
+
+            document.getElementById('treatment-summary').innerHTML = treatmentSummary;
+        }
+
+        // Get color for metadata indicators
+        function getMetadataColor(type) {
+            switch (type) {
+                case 'stage': return 'text-purple-600';
+                case 'risk': return 'text-red-600';
+                case 'performance': return 'text-blue-600';
+                default: return 'text-gray-700';
+            }
+        }
+
+        // Display patient timeline
+        function displayTimeline(timeline) {
+            const container = document.getElementById('patient-timeline');
+            container.innerHTML = timeline.map(item => `
+                <div class="timeline-item">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <span class="text-sm font-medium text-gray-600">${formatDate(item.date)}</span>
+                                <span class="ml-3 px-2 py-1 text-xs rounded-full ${getTimelineTypeColor(item.type)}">
+                                    ${item.type}
+                                </span>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">${item.title}</h4>
+                            <p class="text-gray-600">${item.description}</p>
+                        </div>
+                        <span class="text-xs text-green-600 font-medium">${item.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Close patient detail view
+        function closePatientDetail() {
+            document.getElementById('patient-overview').classList.add('hidden');
+            document.getElementById('default-view').classList.remove('hidden');
+            currentPatient = null;
+        }
+
+        // Get timeline icon based on type
+        function getTimelineIcon(type) {
+            switch (type) {
+                case 'Treatment': return 'fa-pills';
+                case 'Surgery': return 'fa-scalpel';
+                case 'Imaging': return 'fa-x-ray';
+                case 'Follow-up': return 'fa-stethoscope';
+                default: return 'fa-calendar';
+            }
+        }
+
+        // Update dashboard stats
+        function updateStats() {
+            document.getElementById('total-patients').textContent = patients.length;
+            document.getElementById('active-cases').textContent = patients.filter(p => p.treatmentStatus === 'Active Treatment').length;
+            document.getElementById('recent-visits').textContent = patients.filter(p => {
+                const visitDate = new Date(p.lastVisit);
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return visitDate > weekAgo;
+            }).length;
+            document.getElementById('pending-reviews').textContent = Math.floor(patients.length * 0.3); // Sample calculation
+        }
+
+        // Helper functions
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function getStatusColor(status) {
+            switch (status) {
+                case 'Active Treatment': return 'bg-red-100 text-red-800';
+                case 'In Remission': return 'bg-green-100 text-green-800';
+                case 'Monitoring': return 'bg-blue-100 text-blue-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getTimelineTypeColor(type) {
+            switch (type) {
+                case 'Treatment': return 'bg-red-100 text-red-800';
+                case 'Surgery': return 'bg-purple-100 text-purple-800';
+                case 'Imaging': return 'bg-blue-100 text-blue-800';
+                case 'Follow-up': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Switch between patient data tabs
+        function switchTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.patient-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Activate selected tab
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+        }
+
+        // Populate comprehensive patient data across all tabs
+        function populateComprehensiveData(patient) {
+            if (!patient) return;
+
+            // Populate Medical History Tab
+            if (patient.medicalHistory) {
+                document.getElementById('chief-complaint').innerHTML = `
+                    <p class="text-sm leading-relaxed">${patient.medicalHistory.chiefComplaint}</p>
+                `;
+
+                document.getElementById('past-medical-history').innerHTML = `
+                    <ul class="text-sm space-y-2">
+                        ${patient.medicalHistory.pastMedicalHistory.map(item => `<li>• ${item}</li>`).join('')}
+                    </ul>
+                `;
+
+                document.getElementById('family-history').innerHTML = `
+                    <ul class="text-sm space-y-2">
+                        ${patient.medicalHistory.familyHistory.map(item => `<li>• ${item}</li>`).join('')}
+                    </ul>
+                `;
+
+                document.getElementById('social-history').innerHTML = `
+                    <ul class="text-sm space-y-2">
+                        ${patient.medicalHistory.socialHistory.map(item => `<li>• ${item}</li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            // Populate Lab Results Tab
+            if (patient.labResults) {
+                document.getElementById('recent-labs').innerHTML = patient.labResults.map(lab => `
+                    <div class="lab-value ${lab.status}">
+                        <div class="text-sm font-medium text-gray-900">${lab.name}</div>
+                        <div class="text-2xl font-bold ${getLabValueColor(lab.status)} mt-1">${lab.value}</div>
+                        <div class="text-xs text-gray-600">${lab.unit}</div>
+                        <div class="text-xs text-gray-500 mt-1">Normal: ${lab.normal}</div>
+                        <div class="text-xs font-medium ${getLabStatusColor(lab.status)} mt-1">${lab.status.toUpperCase()}</div>
+                    </div>
+                `).join('');
+
+                // Add trending information
+                document.getElementById('lab-trends').innerHTML = `
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="text-sm text-gray-600 mb-2">Recent lab trends show:</div>
+                        <ul class="text-sm space-y-1">
+                            <li>• Hemoglobin trending downward (monitoring required)</li>
+                            <li>• CEA slightly elevated but stable</li>
+                            <li>• Renal function maintained within normal limits</li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Populate Imaging Tab
+            if (patient.imaging) {
+                document.getElementById('imaging-studies').innerHTML = patient.imaging.map(study => `
+                    <div class="imaging-study">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h5 class="text-lg font-semibold text-gray-900">${study.type}</h5>
+                                <p class="text-sm text-gray-600">${formatDate(study.date)}</p>
+                            </div>
+                            <span class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                                <i class="fas fa-x-ray mr-1"></i>Imaging
+                            </span>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <h6 class="text-sm font-medium text-gray-700 mb-1">Findings:</h6>
+                                <p class="text-sm text-gray-600">${study.findings}</p>
+                            </div>
+                            <div>
+                                <h6 class="text-sm font-medium text-gray-700 mb-1">Impression:</h6>
+                                <p class="text-sm font-semibold text-gray-800">${study.impression}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Populate Molecular Profile Tab
+            if (patient.molecular) {
+                // Genetic Testing
+                if (patient.molecular.geneticTesting) {
+                    document.getElementById('genetic-testing').innerHTML = patient.molecular.geneticTesting.map(test => `
+                        <div class="biomarker-card ${test.status === 'Pathogenic' ? 'biomarker-positive' : 'biomarker-negative'}">
+                            <div class="text-sm font-medium text-gray-900 mb-1">${test.gene}</div>
+                            <div class="text-sm text-gray-700 mb-2">${test.mutation}</div>
+                            <span class="text-xs px-2 py-1 rounded-full ${test.status === 'Pathogenic' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                ${test.status}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+
+                // Biomarkers
+                if (patient.molecular.biomarkers) {
+                    document.getElementById('biomarkers').innerHTML = patient.molecular.biomarkers.map(marker => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-start justify-between mb-2">
+                                <h6 class="text-sm font-semibold text-gray-900">${marker.marker}</h6>
+                                <span class="text-sm font-medium text-blue-600">${marker.result}</span>
+                            </div>
+                            <p class="text-xs text-gray-600">${marker.significance}</p>
+                        </div>
+                    `).join('');
+                }
+
+                // Immunohistochemistry
+                if (patient.molecular.immunohistochemistry) {
+                    document.getElementById('immunohisto').innerHTML = patient.molecular.immunohistochemistry.map(ihc => `
+                        <div class="biomarker-card ${ihc.result === 'Negative' ? 'biomarker-negative' : 'biomarker-positive'}">
+                            <div class="text-sm font-medium text-gray-900 mb-1">${ihc.marker}</div>
+                            <div class="text-lg font-bold ${ihc.result === 'Negative' ? 'text-green-700' : 'text-red-700'} mb-2">${ihc.result}</div>
+                            <p class="text-xs text-gray-600">${ihc.interpretation}</p>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Populate Treatment Response Tab
+            if (patient.treatmentResponse) {
+                // Treatment Response
+                if (patient.treatmentResponse.responses) {
+                    document.getElementById('treatment-response').innerHTML = patient.treatmentResponse.responses.map(response => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="text-sm font-medium text-gray-900">${formatDate(response.date)}</div>
+                                <span class="px-2 py-1 text-xs rounded-full ${getResponseColor(response.assessment)}">
+                                    ${response.assessment}
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-600">Tumor Size:</span>
+                                    <span class="font-medium ml-1">${response.tumor_size}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">Change:</span>
+                                    <span class="font-medium ml-1 ${response.percent_change.startsWith('-') ? 'text-green-600' : 'text-red-600'}">${response.percent_change}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Side Effects
+                if (patient.treatmentResponse.sideEffects) {
+                    document.getElementById('side-effects').innerHTML = patient.treatmentResponse.sideEffects.map(effect => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="text-sm font-medium text-gray-900">${effect.effect}</div>
+                                <span class="px-2 py-1 text-xs rounded-full ${getGradeColor(effect.grade)}">
+                                    ${effect.grade}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600"><strong>Management:</strong> ${effect.management}</p>
+                        </div>
+                    `).join('');
+                }
+
+                // Performance Status
+                if (patient.treatmentResponse.performanceStatus) {
+                    document.getElementById('performance-status').innerHTML = patient.treatmentResponse.performanceStatus.map(status => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-4">
+                            <div class="text-sm font-medium text-gray-900 mb-3">${formatDate(status.date)}</div>
+                            <div class="grid grid-cols-3 gap-4 text-sm">
+                                <div class="text-center">
+                                    <div class="text-gray-600 mb-1">ECOG</div>
+                                    <div class="text-xl font-bold text-blue-600">${status.ecog}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-600 mb-1">Karnofsky</div>
+                                    <div class="text-xl font-bold text-green-600">${status.karnofsky}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-600 mb-1">QoL Score</div>
+                                    <div class="text-xl font-bold text-purple-600">${status.qol_score}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        // Helper functions for styling
+        function getLabValueColor(status) {
+            switch (status) {
+                case 'high': return 'text-red-600';
+                case 'low': return 'text-blue-600';
+                case 'normal': return 'text-green-600';
+                default: return 'text-gray-600';
+            }
+        }
+
+        function getLabStatusColor(status) {
+            switch (status) {
+                case 'high': return 'text-red-600';
+                case 'low': return 'text-blue-600';
+                case 'normal': return 'text-green-600';
+                default: return 'text-gray-600';
+            }
+        }
+
+        function getResponseColor(assessment) {
+            switch (assessment) {
+                case 'Complete Response': return 'bg-green-100 text-green-800';
+                case 'Partial Response': return 'bg-blue-100 text-blue-800';
+                case 'Stable Disease': return 'bg-yellow-100 text-yellow-800';
+                case 'Progressive Disease': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getGradeColor(grade) {
+            switch (grade) {
+                case 'Grade 1': return 'bg-green-100 text-green-800';
+                case 'Grade 2': return 'bg-yellow-100 text-yellow-800';
+                case 'Grade 3': return 'bg-orange-100 text-orange-800';
+                case 'Grade 4': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+    </script>
+</body>
+</html>

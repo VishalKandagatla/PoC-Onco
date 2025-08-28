@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tumor Board Reports - Entheory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/reports.css">
+    
+    <!-- Shared Data -->
+    <script src="/js/patientData.js"></script>
+    
+    <!-- JavaScript Modules -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/patientService.js"></script>
+    <script src="/js/components.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation will be inserted by navigation.js -->
+    
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="page-title">Tumor Board Reports</h1>
+            <p class="page-subtitle">Comprehensive oncology case reports and treatment recommendations</p>
+        </div>
+
+        <!-- Statistics Bar -->
+        <div class="reports-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="total-reports">12</div>
+                <div class="stat-label">Total Reports</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="draft-reports">3</div>
+                <div class="stat-label">Draft</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="ready-reports">6</div>
+                <div class="stat-label">Ready</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="presented-reports">2</div>
+                <div class="stat-label">Presented</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="archived-reports">1</div>
+                <div class="stat-label">Archived</div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="reports-filter">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">Search</label>
+                    <input type="text" class="filter-input" placeholder="Search by patient name or ID..." id="search-input">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select class="filter-input" id="status-filter">
+                        <option value="">All Statuses</option>
+                        <option value="draft">Draft</option>
+                        <option value="ready">Ready</option>
+                        <option value="presented">Presented</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Cancer Type</label>
+                    <select class="filter-input" id="cancer-filter">
+                        <option value="">All Types</option>
+                        <option value="breast">Breast Cancer</option>
+                        <option value="lung">Lung Cancer</option>
+                        <option value="oral">Oral Cancer</option>
+                        <option value="cervical">Cervical Cancer</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button class="filter-btn primary" onclick="reportsController.applyFilters()">
+                        <i class="fas fa-search mr-2"></i>Filter
+                    </button>
+                    <button class="filter-btn secondary" onclick="reportsController.clearFilters()">
+                        <i class="fas fa-times mr-2"></i>Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-4">
+                <button class="btn-primary" onclick="reportsController.createNewReport()">
+                    <i class="fas fa-plus mr-2"></i>New Report
+                </button>
+                <button class="btn-secondary" onclick="reportsController.exportReports()">
+                    <i class="fas fa-download mr-2"></i>Export
+                </button>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-600">Sort by:</span>
+                <select class="filter-input" id="sort-select" onchange="reportsController.sortReports(this.value)">
+                    <option value="date-desc">Latest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="name-asc">Patient Name A-Z</option>
+                    <option value="name-desc">Patient Name Z-A</option>
+                    <option value="status">Status</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Reports Grid -->
+        <div id="reports-container" class="reports-grid">
+            <!-- Reports will be populated by JavaScript -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-16">
+            <i class="fas fa-clipboard-list text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No Reports Found</h3>
+            <p class="text-gray-500 mb-6">No tumor board reports match your current filters.</p>
+            <button class="btn-primary" onclick="reportsController.clearFilters()">
+                Clear Filters
+            </button>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="report-modal" class="report-modal hidden" onclick="reportsController.closeModal()">
+        <div class="report-modal-content" onclick="event.stopPropagation()">
+            <div class="report-modal-header">
+                <h2 class="report-modal-title" id="modal-title">Tumor Board Report</h2>
+                <button onclick="reportsController.closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="report-modal-body" id="modal-body">
+                <!-- Report content will be populated here -->
+            </div>
+            <div class="report-modal-footer">
+                <button class="btn-secondary" onclick="reportsController.closeModal()">Close</button>
+                <button class="btn-primary" onclick="reportsController.editReport()">
+                    <i class="fas fa-edit mr-2"></i>Edit Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TumorBoardReportsController {
+            constructor() {
+                this.allReports = [];
+                this.filteredReports = [];
+                this.currentSort = 'date-desc';
+                this.filters = {
+                    search: '',
+                    status: '',
+                    cancerType: ''
+                };
+            }
+
+            init() {
+                // Initialize navigation
+                Navigation.init('reports');
+                
+                // Ensure modal is hidden on page load
+                const modal = document.getElementById('report-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.style.display = 'none';
+                }
+                
+                // Load reports data
+                this.loadReports();
+                
+                // Setup event listeners
+                this.setupEventListeners();
+                
+                // Render initial view
+                this.renderReports();
+                this.updateStats();
+                
+                console.log('Tumor Board Reports initialized');
+            }
+
+            loadReports() {
+                // Get patient data and create reports for each patient
+                const patients = PatientService.getAllPatients();
+                
+                this.allReports = patients.map(patient => ({
+                    id: `report-${patient.id}`,
+                    patientId: patient.id,
+                    patientName: patient.name,
+                    patientAge: patient.age,
+                    patientGender: patient.gender,
+                    diagnosis: patient.diagnosis,
+                    stage: patient.stage,
+                    status: this.getRandomStatus(),
+                    createdDate: this.getRandomDate(),
+                    lastModified: this.getRandomDate(),
+                    boardDate: this.getRandomFutureDate(),
+                    presenter: this.getRandomPresenter(),
+                    summary: this.generateSummary(patient),
+                    recommendations: this.generateRecommendations(patient),
+                    attendees: ['Dr. Vikram Singh', 'Dr. Anjali Desai', 'Dr. Rohit Mehta', 'Dr. Kavita Joshi'],
+                    cancerType: this.extractCancerType(patient.diagnosis)
+                }));
+                
+                this.filteredReports = [...this.allReports];
+            }
+
+            getRandomStatus() {
+                const statuses = ['draft', 'ready', 'presented', 'archived'];
+                const weights = [0.3, 0.4, 0.2, 0.1]; // More drafts and ready reports
+                const random = Math.random();
+                let cumulative = 0;
+                
+                for (let i = 0; i < statuses.length; i++) {
+                    cumulative += weights[i];
+                    if (random <= cumulative) {
+                        return statuses[i];
+                    }
+                }
+                return 'draft';
+            }
+
+            getRandomDate() {
+                const start = new Date(2024, 0, 1);
+                const end = new Date();
+                return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+            }
+
+            getRandomFutureDate() {
+                const start = new Date();
+                const end = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+                return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+            }
+
+            getRandomPresenter() {
+                const presenters = ['Dr. Priya Sharma', 'Dr. Rajesh Gupta', 'Dr. Meera Patel', 'Dr. Arun Kumar'];
+                return presenters[Math.floor(Math.random() * presenters.length)];
+            }
+
+            extractCancerType(diagnosis) {
+                if (!diagnosis || typeof diagnosis !== 'string') return 'other';
+                const lower = diagnosis.toLowerCase();
+                if (lower.includes('breast')) return 'breast';
+                if (lower.includes('lung')) return 'lung';
+                if (lower.includes('oral') || lower.includes('squamous')) return 'oral';
+                if (lower.includes('cervical')) return 'cervical';
+                return 'other';
+            }
+
+            generateSummary(patient) {
+                const gender = (patient.gender || 'unknown').toLowerCase();
+                const treatmentStatus = (patient.treatmentStatus || 'unknown').toLowerCase();
+                return `${patient.age}-year-old ${gender} with ${patient.diagnosis} ${patient.stage ? `(${patient.stage})` : ''}. Patient is currently ${treatmentStatus} with last visit on ${Utils.formatDate(patient.lastVisit)}.`;
+            }
+
+            generateRecommendations(patient) {
+                const recommendations = [
+                    'Continue current treatment protocol',
+                    'Consider adjuvant therapy options',
+                    'Recommend genetic counseling',
+                    'Schedule follow-up imaging in 3 months',
+                    'Discuss clinical trial eligibility'
+                ];
+                
+                // Return 2-3 random recommendations
+                const shuffled = recommendations.sort(() => 0.5 - Math.random());
+                return shuffled.slice(0, 2 + Math.floor(Math.random() * 2));
+            }
+
+            setupEventListeners() {
+                // Search input
+                const searchInput = document.getElementById('search-input');
+                searchInput.addEventListener('input', Utils.debounce(() => {
+                    this.filters.search = searchInput.value;
+                    this.applyFilters();
+                }, 300));
+            }
+
+            renderReports() {
+                const container = document.getElementById('reports-container');
+                const emptyState = document.getElementById('empty-state');
+                
+                if (this.filteredReports.length === 0) {
+                    container.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                
+                container.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                
+                container.innerHTML = this.filteredReports.map(report => this.createReportCard(report)).join('');
+            }
+
+            createReportCard(report) {
+                const avatarColor = Utils.generateAvatarColor(report.patientName);
+                const initials = Utils.getInitials(report.patientName);
+                
+                return `
+                    <div class="report-card" onclick="reportsController.viewReport('${report.id}')">
+                        <span class="report-status ${report.status}">${report.status}</span>
+                        
+                        <div class="report-header">
+                            <div class="report-avatar" style="background-color: ${avatarColor}">
+                                ${initials}
+                            </div>
+                            <div class="report-patient-info">
+                                <h3>${Utils.sanitizeHtml(report.patientName)}</h3>
+                                <div class="report-patient-meta">
+                                    ${report.patientAge} years • ${report.patientGender} • ${report.patientId}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="report-summary">
+                            <div class="report-diagnosis">${Utils.sanitizeHtml(report.diagnosis)}</div>
+                            ${report.stage ? `<span class="report-stage">${report.stage}</span>` : ''}
+                            <div class="report-description">${Utils.sanitizeHtml(report.summary)}</div>
+                        </div>
+                        
+                        <div class="report-metadata">
+                            <div class="metadata-item">
+                                <div class="metadata-label">Created</div>
+                                <div class="metadata-value">${Utils.formatDate(report.createdDate)}</div>
+                            </div>
+                            <div class="metadata-item">
+                                <div class="metadata-label">Board Date</div>
+                                <div class="metadata-value">${Utils.formatDate(report.boardDate)}</div>
+                            </div>
+                            <div class="metadata-item">
+                                <div class="metadata-label">Presenter</div>
+                                <div class="metadata-value">${Utils.sanitizeHtml(report.presenter)}</div>
+                            </div>
+                            <div class="metadata-item">
+                                <div class="metadata-label">Last Modified</div>
+                                <div class="metadata-value">${Utils.formatDate(report.lastModified)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="report-actions">
+                            <button class="report-action primary" onclick="event.stopPropagation(); reportsController.viewReport('${report.id}')">
+                                <i class="fas fa-eye mr-1"></i>View
+                            </button>
+                            <button class="report-action secondary" onclick="event.stopPropagation(); reportsController.editReport('${report.id}')">
+                                <i class="fas fa-edit mr-1"></i>Edit
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            updateStats() {
+                const stats = {
+                    total: this.allReports.length,
+                    draft: this.allReports.filter(r => r.status === 'draft').length,
+                    ready: this.allReports.filter(r => r.status === 'ready').length,
+                    presented: this.allReports.filter(r => r.status === 'presented').length,
+                    archived: this.allReports.filter(r => r.status === 'archived').length
+                };
+                
+                document.getElementById('total-reports').textContent = stats.total;
+                document.getElementById('draft-reports').textContent = stats.draft;
+                document.getElementById('ready-reports').textContent = stats.ready;
+                document.getElementById('presented-reports').textContent = stats.presented;
+                document.getElementById('archived-reports').textContent = stats.archived;
+            }
+
+            applyFilters() {
+                this.filters.status = document.getElementById('status-filter').value;
+                this.filters.cancerType = document.getElementById('cancer-filter').value;
+                
+                this.filteredReports = this.allReports.filter(report => {
+                    const matchesSearch = !this.filters.search || 
+                        (report.patientName && report.patientName.toLowerCase().includes(this.filters.search.toLowerCase())) ||
+                        (report.patientId && report.patientId.toLowerCase().includes(this.filters.search.toLowerCase()));
+                    
+                    const matchesStatus = !this.filters.status || report.status === this.filters.status;
+                    const matchesCancer = !this.filters.cancerType || report.cancerType === this.filters.cancerType;
+                    
+                    return matchesSearch && matchesStatus && matchesCancer;
+                });
+                
+                this.sortReports(this.currentSort);
+                this.renderReports();
+            }
+
+            clearFilters() {
+                document.getElementById('search-input').value = '';
+                document.getElementById('status-filter').value = '';
+                document.getElementById('cancer-filter').value = '';
+                
+                this.filters = { search: '', status: '', cancerType: '' };
+                this.filteredReports = [...this.allReports];
+                this.sortReports(this.currentSort);
+                this.renderReports();
+            }
+
+            sortReports(sortType) {
+                this.currentSort = sortType;
+                
+                this.filteredReports.sort((a, b) => {
+                    switch (sortType) {
+                        case 'date-desc':
+                            return new Date(b.createdDate) - new Date(a.createdDate);
+                        case 'date-asc':
+                            return new Date(a.createdDate) - new Date(b.createdDate);
+                        case 'name-asc':
+                            return a.patientName.localeCompare(b.patientName);
+                        case 'name-desc':
+                            return b.patientName.localeCompare(a.patientName);
+                        case 'status':
+                            const statusOrder = { draft: 0, ready: 1, presented: 2, archived: 3 };
+                            return statusOrder[a.status] - statusOrder[b.status];
+                        default:
+                            return 0;
+                    }
+                });
+                
+                this.renderReports();
+            }
+
+            viewReport(reportId) {
+                const report = this.allReports.find(r => r.id === reportId);
+                if (!report) return;
+                
+                document.getElementById('modal-title').textContent = `${report.patientName} - Tumor Board Report`;
+                
+                const modalBody = document.getElementById('modal-body');
+                modalBody.innerHTML = this.generateReportContent(report);
+                
+                document.getElementById('report-modal').classList.remove('hidden');
+            }
+
+            generateReportContent(report) {
+                return `
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="font-semibold text-gray-900 mb-2">Patient Information</h3>
+                                <div class="space-y-2 text-sm">
+                                    <div><strong>Name:</strong> ${report.patientName}</div>
+                                    <div><strong>Age:</strong> ${report.patientAge} years</div>
+                                    <div><strong>Gender:</strong> ${report.patientGender}</div>
+                                    <div><strong>ID:</strong> ${report.patientId}</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 mb-2">Report Details</h3>
+                                <div class="space-y-2 text-sm">
+                                    <div><strong>Status:</strong> <span class="capitalize">${report.status}</span></div>
+                                    <div><strong>Created:</strong> ${Utils.formatDate(report.createdDate)}</div>
+                                    <div><strong>Board Date:</strong> ${Utils.formatDate(report.boardDate)}</div>
+                                    <div><strong>Presenter:</strong> ${report.presenter}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-2">Clinical Summary</h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="mb-2"><strong>Diagnosis:</strong> ${report.diagnosis}</div>
+                                ${report.stage ? `<div class="mb-2"><strong>Stage:</strong> ${report.stage}</div>` : ''}
+                                <div><strong>Summary:</strong> ${report.summary}</div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-2">Recommendations</h3>
+                            <ul class="list-disc list-inside space-y-1 text-sm">
+                                ${report.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-2">Board Attendees</h3>
+                            <div class="flex flex-wrap gap-2">
+                                ${report.attendees.map(attendee => `
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                                        ${attendee}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            closeModal() {
+                const modal = document.getElementById('report-modal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.style.display = 'none';
+                }
+            }
+
+            editReport(reportId) {
+                Utils.showToast('Edit functionality would open report editor', 'info');
+            }
+
+            createNewReport() {
+                Utils.showToast('New report creation would open report builder', 'info');
+            }
+
+            exportReports() {
+                Utils.showToast('Reports exported successfully', 'success');
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            window.reportsController = new TumorBoardReportsController();
+            reportsController.init();
+        });
+    </script>
+</body>
+</html>

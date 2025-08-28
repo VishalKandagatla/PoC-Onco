@@ -1,0 +1,14 @@
+{
+  "patient_id": "case_3",
+  "admission_date": "2025-03-12",
+  "discharge_date": "2025-03-20",
+  "ward": "Breast surgery ward",
+  "room_type": "Shared ward",
+  "insurance_details": "None (self-financed)",
+  "billing_account": {
+    "expected_cost": 200000,
+    "payment_status": "pending"
+  },
+  "ABHA_integration": false,
+  "notes": "Administrative information for the patient's hospital stay."
+}

@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OncoConnect - Medical Search</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Modern CSS Variables */
+        :root {
+            --primary-blue: #0588e3;
+            --secondary-blue: #2563eb;
+            --light-blue: #f0f9ff;
+            --dark-blue: #1e40af;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --green-500: #10b981;
+            --green-50: #ecfdf5;
+            --yellow-500: #f59e0b;
+            --yellow-50: #fffbeb;
+            --red-500: #ef4444;
+            --red-50: #fef2f2;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: white;
+            min-height: 100vh;
+            color: #374151;
+        }
+
+        .minimal-header {
+            background: white;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .search-result-card {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            background: white;
+            border: 1px solid #e5e7eb;
+        }
+
+        .search-result-card:hover {
+            border-left-color: var(--primary-blue);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .citation-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .patient-context-active {
+            background: #f9fafb;
+            border-color: #374151;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .patient-context-active .font-medium {
+            color: #111827 !important;
+        }
+
+        .patient-context-active .text-sm {
+            color: #6b7280 !important;
+        }
+
+        /* Ultra Minimal Container Styles */
+        .minimal-card {
+            background: white;
+            border: none;
+            border-top: 1px solid #f3f4f6;
+            box-shadow: none;
+        }
+
+        /* Liquid Glass Navigation Bar */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.4) 0%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0.1) 100%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .glass-nav:hover {
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        /* Add subtle animation for liquid effect */
+        @keyframes liquidFlow {
+            0%, 100% { 
+                background-position: 0% 50%; 
+            }
+            50% { 
+                background-position: 100% 50%; 
+            }
+        }
+        
+        .glass-nav::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.6) 50%, 
+                transparent 100%);
+            background-size: 200% 100%;
+            animation: liquidFlow 4s ease-in-out infinite;
+        }
+        
+        /* Enhanced glass morphism for better visibility */
+        .glass-nav * {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Navigation Links */
+        .nav-link {
+            transition: all 0.2s ease;
+            padding: 8px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .minimal-tab {
+            border: none;
+            background: none;
+            color: #6b7280;
+            font-weight: 500;
+            padding: 8px 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        .minimal-tab.active {
+            color: #111827;
+            border-bottom-color: #111827;
+        }
+        .loading-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Enhanced Loading Animations */
+        .typing-animation {
+            overflow: hidden;
+            border-right: 2px solid #0588e3;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end) infinite, blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            0% { width: 0; }
+            50% { width: 100%; }
+            100% { width: 0; }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #0588e3; }
+        }
+        
+        .floating-dots {
+            display: inline-block;
+        }
+        
+        .floating-dots span {
+            display: inline-block;
+            animation: float 1.5s ease-in-out infinite;
+            margin: 0 2px;
+        }
+        
+        .floating-dots span:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        
+        .floating-dots span:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .search-wave {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .search-wave::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(5, 136, 227, 0.1), transparent);
+            animation: wave 2s ease-in-out infinite;
+        }
+        
+        @keyframes wave {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        
+        .pulse-ring {
+            position: relative;
+        }
+        
+        .pulse-ring::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            margin: -30px 0 0 -30px;
+            border: 2px solid #0588e3;
+            border-radius: 50%;
+            animation: pulse-ring 2s ease-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+        
+        .step-item {
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid transparent;
+        }
+        
+        .step-item.opacity-100 {
+            background-color: rgba(5, 136, 227, 0.1);
+            border-left-color: #0588e3;
+        }
+        
+        /* Sources Display */
+        .sources-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .source-item {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            margin-bottom: 8px;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        
+        .source-item.active {
+            opacity: 1;
+            transform: translateX(0);
+            border-color: #0588e3;
+            background: rgba(5, 136, 227, 0.05);
+        }
+        
+        .source-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(5, 136, 227, 0.15);
+        }
+        
+        .source-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .source-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .status-searching {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-found {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .status-processing {
+            background: #dbeafe;
+            color: #0588e3;
+        }
+        
+        /* Simple Search Interface */
+        .search-container {
+            background: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .tab-btn {
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-blue) !important;
+            border-bottom: 2px solid var(--primary-blue);
+        }
+        
+        .source-result {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-bottom: 6px;
+        }
+        
+        .source-result:hover {
+            border-color: var(--primary-blue);
+            background: #f8fafc;
+        }
+        
+        .source-result.loading {
+            border-color: #fbbf24;
+            background: #fffbeb;
+        }
+
+        .source-result.loading .text-sm,
+        .source-result.loading .text-xs {
+            color: #92400e !important;
+        }
+        
+        .source-result.found {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .source-result.found .text-sm,
+        .source-result.found .text-xs {
+            color: #064e3b !important;
+        }
+        
+        .source-favicon {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+            margin-right: 8px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        
+        .search-step {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .search-step.active {
+            background-color: #f0f9ff;
+            border-left-color: var(--primary-blue);
+            color: #1e40af;
+            font-weight: 500;
+        }
+        
+        .search-step.completed {
+            background-color: #f0fdf4;
+            border-left-color: #10b981;
+            color: #047857;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Liquid Glass Navigation Bar -->
+    <nav class="glass-nav fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <!-- Entheory Logo -->
+                <div class="flex items-center">
+                    <img src="/images/logo.svg" alt="Entheory" class="h-8 w-auto">
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="flex items-center space-x-6">
+                    <a href="/medical-search.html" class="nav-link text-blue-600 font-semibold">
+                        Medical Search
+                    </a>
+                    <a href="/clinician-dashboard.html" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        Patient Dashboard
+                    </a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        Analytics
+                    </a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        Reports
+                    </a>
+                    <a href="#" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Spacer for fixed navigation -->
+    <div class="h-16"></div>
+
+    <div class="max-w-6xl mx-auto px-6 pt-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Search and Patient Context -->
+            <div class="lg:col-span-1">
+                <!-- Patient Context Section -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Patient Context</h3>
+                    <div class="space-y-3">
+                        <button onclick="setPatientContext(null)" id="context-none" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-gray-300 transition patient-context-btn">
+                            <div class="font-medium text-gray-900">General Search</div>
+                            <div class="text-sm text-gray-500 mt-1">No patient context</div>
+                        </button>
+                        <button onclick="setPatientContext('SYNTHETIC-CASE_1')" id="context-case1" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-gray-300 transition patient-context-btn">
+                            <div class="font-medium text-gray-900">Rajesh Kumar</div>
+                            <div class="text-sm text-gray-500 mt-1">Oral SCC, T2N1M0</div>
+                        </button>
+                        <button onclick="setPatientContext('SYNTHETIC-CASE_2')" id="context-case2" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-gray-300 transition patient-context-btn">
+                            <div class="font-medium text-gray-900">Lakshmi Devi</div>
+                            <div class="text-sm text-gray-500 mt-1">Cervical Ca, Stage IIIB</div>
+                        </button>
+                        <button onclick="setPatientContext('SYNTHETIC-CASE_3')" id="context-case3" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-gray-300 transition patient-context-btn">
+                            <div class="font-medium text-gray-900">Rina Saha</div>
+                            <div class="text-sm text-gray-500 mt-1">Breast Ca, Stage IIA</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search History Section -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Recent Searches</h3>
+                        <button onclick="clearSearchHistory()" class="text-sm text-gray-500 hover:text-gray-900 transition">
+                            Clear
+                        </button>
+                    </div>
+                    <div id="search-history" class="space-y-2">
+                        <!-- History items will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Search Interface and Results -->
+            <div class="lg:col-span-2">
+                <!-- Perplexity-Style Search Section -->
+                <div class="mb-12">
+                    <!-- Main Search Container -->
+                    <div class="relative bg-white border border-gray-200 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-4">
+                        <div class="flex items-center space-x-3">
+                            <!-- Search Input Area -->
+                            <div class="flex-1 flex items-center">
+                                <textarea 
+                                    id="search-input"
+                                    rows="1"
+                                    placeholder="Ask anything about medical topics, treatments, guidelines..."
+                                    class="w-full resize-none border-none outline-none text-lg text-gray-700 placeholder-gray-400 bg-transparent py-2"
+                                    onkeypress="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); performSearch(); }"
+                                    oninput="autoResize(this)"
+                                ></textarea>
+                                <div class="text-xs text-gray-400 px-2 py-1 bg-gray-100 rounded border ml-2 hidden md:block">
+                                    ⏎ Enter
+                                </div>
+                            </div>
+                            
+                            <!-- Search Button - Just Icon -->
+                            <button 
+                                onclick="performSearch()" 
+                                class="w-12 h-12 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                                title="Search"
+                            >
+                                <!-- Custom Search Icon -->
+                                <img src="/images/icon.png" alt="Search" class="w-8 h-8">
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Suggestions -->
+                    <div class="flex flex-wrap gap-3 mt-6 justify-center">
+                        <button onclick="quickSearch('NCCN guidelines')" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200">NCCN Guidelines</button>
+                        <button onclick="quickSearch('immunotherapy')" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200">Immunotherapy</button>
+                        <button onclick="quickSearch('targeted therapy')" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200">Targeted Therapy</button>
+                        <button onclick="quickSearch('clinical trials')" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200">Clinical Trials</button>
+                    </div>
+                </div>
+
+                <!-- Search Results Section -->
+                <div id="results-section" class="hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900">Search Results</h3>
+                        <div class="text-sm text-gray-500" id="search-timer"></div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <div class="text-sm text-gray-500 mb-2">Query</div>
+                        <div id="current-query" class="text-gray-900"></div>
+                    </div>
+
+                    <!-- Tab Navigation -->
+                    <div class="border-b border-gray-200 mb-6">
+                        <nav class="-mb-px flex space-x-8">
+                            <button class="minimal-tab active" data-tab="sources">
+                                Sources <span id="sources-count" class="ml-1 text-gray-400">0</span>
+                            </button>
+                            <button class="minimal-tab" data-tab="steps">Steps</button>
+                        </nav>
+                    </div>
+                    
+                    <!-- Scrollable Content Area -->
+                    <div class="h-[600px] overflow-y-auto border border-gray-200 rounded-lg bg-gray-50 p-6">
+                        <!-- Sources Tab -->
+                        <div id="sources-tab" class="tab-content">
+                            <div id="active-sources" class="space-y-4">
+                                <!-- Sources will be populated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Steps Tab -->
+                        <div id="steps-tab" class="tab-content hidden">
+                            <div id="search-process" class="space-y-3">
+                                <!-- Process steps will be shown here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading-state" class="hidden">
+                    <div class="border border-gray-200 rounded-md p-6">
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Searching</h3>
+                            <div id="loading-query" class="text-sm text-gray-500 mb-4"></div>
+                        </div>
+                        
+                        <!-- Minimal Progress Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-gray-800 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        
+                        <div id="progress-text" class="text-xs text-gray-500 mt-2">Initializing search...</div>
+                    </div>
+                </div>
+
+                <!-- Default State -->
+                <div id="default-state" class="text-center py-16">
+            <div class="text-gray-400 mb-4">
+                <i class="fas fa-search text-4xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Ready to search</h3>
+            <p class="text-gray-500">Enter a medical topic to begin</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPatientContext = null;
+        let searchHistory = JSON.parse(localStorage.getItem('medicalSearchHistory') || '[]');
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSearchHistory();
+            setPatientContext(null);
+        });
+
+        function setPatientContext(caseId) {
+            currentPatientContext = caseId;
+            
+            // Update UI
+            document.querySelectorAll('.patient-context-btn').forEach(btn => {
+                btn.classList.remove('patient-context-active');
+            });
+            
+            if (caseId) {
+                // Map case IDs to button IDs
+                const buttonIdMap = {
+                    'SYNTHETIC-CASE_1': 'context-case1',
+                    'SYNTHETIC-CASE_2': 'context-case2',
+                    'SYNTHETIC-CASE_3': 'context-case3'
+                };
+                document.getElementById(buttonIdMap[caseId]).classList.add('patient-context-active');
+                // Context indicator removed for minimal design
+            } else {
+                document.getElementById('context-none').classList.add('patient-context-active');
+            }
+        }
+
+        function quickSearch(query) {
+            document.getElementById('search-input').value = query;
+            autoResize(document.getElementById('search-input'));
+            performSearch();
+        }
+        
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('search-input').value.trim();
+            if (!query) return;
+            
+
+            // Hide default state, show loading
+            document.getElementById('default-state').classList.add('hidden');
+            document.getElementById('results-section').classList.add('hidden');
+            document.getElementById('loading-state').classList.remove('hidden');
+            
+            // Update loading query display
+            document.getElementById('loading-query').textContent = `Searching for: "${query}"`;
+            
+            // Reset and start progress animation
+            document.getElementById('progress-bar').style.width = '0%';
+            document.getElementById('progress-bar').style.backgroundColor = '#111827';
+            document.getElementById('progress-text').textContent = 'Initializing search...';
+            
+            // Start search step animation
+            animateSearchSteps();
+
+            try {
+                // Build search payload
+                const payload = {
+                    query: query,
+                    patientContext: currentPatientContext
+                };
+
+                const response = await fetch('/api/medical-search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Search failed');
+                }
+
+                // Add to search history
+                addToSearchHistory(query, currentPatientContext);
+
+                // Display results
+                displaySearchResults(data);
+
+            } catch (error) {
+                console.error('Search error:', error);
+                if (error.message) {
+                    displayError(error.message);
+                } else {
+                    displayError('Search failed. Please check your connection and try again.');
+                }
+            }
+        }
+
+        function displaySearchResults(data) {
+            // Clear search timer
+            if (searchTimer) {
+                clearInterval(searchTimer);
+            }
+            
+            // Complete the progress bar first
+            if (progressInterval) {
+                clearInterval(progressInterval);
+            }
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-text').textContent = 'Complete';
+            
+            // Show results immediately after progress completes
+            setTimeout(() => {
+                const loadingState = document.getElementById('loading-state');
+                const resultsSection = document.getElementById('results-section');
+                
+                loadingState.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+                
+                // Display the current query
+                document.getElementById('current-query').textContent = data.query;
+                
+                // Create a minimal results display
+                const activeSourcesDiv = document.getElementById('active-sources');
+                
+                // Clear existing content
+                activeSourcesDiv.innerHTML = '';
+                
+                // Display comprehensive results from sections
+                if (data.results?.sections?.length > 0) {
+                    data.results.sections.forEach(section => {
+                        // Clean the content by removing <think> tags
+                        let cleanContent = section.content;
+                        if (cleanContent.includes('<think>')) {
+                            // Extract content after </think> tag
+                            const parts = cleanContent.split('</think>');
+                            if (parts.length > 1) {
+                                cleanContent = parts[parts.length - 1].trim();
+                            }
+                        }
+                        
+                        // Convert markdown-style formatting to HTML
+                        cleanContent = cleanContent
+                            .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mb-4 mt-6">$1</h1>')
+                            .replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold mb-3 mt-5">$1</h2>')
+                            .replace(/^### (.*$)/gim, '<h3 class="text-lg font-medium mb-2 mt-4">$1</h3>')
+                            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>')
+                            .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
+                            .replace(/^- (.*$)/gim, '<li class="ml-4 mb-1">• $1</li>')
+                            .replace(/\n\n/g, '</p><p class="mb-3">')
+                            .replace(/\n/g, '<br>');
+                        
+                        // Wrap in paragraph tags
+                        if (!cleanContent.includes('<p>') && !cleanContent.includes('<h')) {
+                            cleanContent = '<p class="mb-3">' + cleanContent + '</p>';
+                        }
+                        
+                        activeSourcesDiv.innerHTML += `
+                            <div class="border border-gray-300 rounded-lg p-8 mb-6 bg-white shadow-sm">
+                                <div class="text-xl font-semibold text-gray-900 mb-6">${section.title}</div>
+                                <div class="text-lg text-gray-800 leading-relaxed prose max-w-none">${cleanContent}</div>
+                            </div>
+                        `;
+                    });
+                } else if (data.results?.summary) {
+                    // Fallback to summary if no sections
+                    let cleanSummary = data.results.summary;
+                    if (cleanSummary.includes('<think>')) {
+                        const parts = cleanSummary.split('</think>');
+                        if (parts.length > 1) {
+                            cleanSummary = parts[parts.length - 1].trim();
+                        }
+                    }
+                    
+                    activeSourcesDiv.innerHTML += `
+                        <div class="border border-gray-300 rounded-lg p-8 mb-6 bg-white shadow-sm">
+                            <div class="text-xl font-semibold text-gray-900 mb-6">Summary</div>
+                            <div class="text-lg text-gray-800 leading-relaxed whitespace-pre-wrap">${cleanSummary}</div>
+                        </div>
+                    `;
+                }
+                
+                // Display citations as sources
+                if (data.results?.citations?.length > 0) {
+                    const citationsHtml = data.results.citations.map(citation => `
+                        <div class="border border-gray-300 rounded-lg p-6 mb-4 bg-white shadow-sm hover:shadow-md transition cursor-pointer">
+                            <div class="text-lg font-semibold text-gray-900 mb-3">${citation.title}</div>
+                            <div class="text-base text-gray-600 mb-3">${citation.journal} (${citation.year})</div>
+                            <div class="text-base text-gray-700 italic mb-3">"${citation.excerpt}"</div>
+                            <div class="text-sm text-gray-500">Relevance: ${Math.round(citation.relevanceScore * 100)}%</div>
+                        </div>
+                    `).join('');
+                    
+                    activeSourcesDiv.innerHTML += citationsHtml;
+                }
+                
+                // If no results from API, show the animated sources as fallback
+                if (!data.results?.sections?.length && !data.results?.summary && !data.results?.citations?.length) {
+                    // Show a message that search is using live sources
+                    activeSourcesDiv.innerHTML = `
+                        <div class="border border-gray-200 rounded-md p-4 mb-4">
+                            <div class="text-sm font-medium text-gray-900 mb-2">Live Source Results</div>
+                            <div class="text-sm text-gray-700">Searching medical databases for: "${data.query}"</div>
+                        </div>
+                    `;
+                    
+                    // Continue showing the source animation that was already started
+                    setTimeout(() => {
+                        showAnimatedSources(data.query);
+                    }, 100);
+                }
+            }, 300);
+        }
+
+        function displayError(message) {
+            // Clear search timer
+            if (searchTimer) {
+                clearInterval(searchTimer);
+            }
+            
+            // Show error in progress text
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-bar').style.backgroundColor = '#ef4444';
+            document.getElementById('progress-text').textContent = 'Search failed';
+            
+            // Show error after brief delay
+            setTimeout(() => {
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('results-section').classList.remove('hidden');
+                document.getElementById('active-sources').innerHTML = `
+                    <div class="border border-red-200 rounded-md p-4 text-center bg-red-50">
+                        <div class="text-sm text-red-700">${message}</div>
+                    </div>
+                `;
+            }, 500);
+        }
+
+        function addToSearchHistory(query, context) {
+            const historyItem = {
+                query: query,
+                context: context,
+                timestamp: new Date().toISOString(),
+                contextName: context ? getContextName(context) : 'General Search'
+            };
+            
+            searchHistory.unshift(historyItem);
+            searchHistory = searchHistory.slice(0, 20); // Keep last 20 searches
+            localStorage.setItem('medicalSearchHistory', JSON.stringify(searchHistory));
+            loadSearchHistory();
+        }
+
+        function loadSearchHistory() {
+            const historyDiv = document.getElementById('search-history');
+            
+            if (searchHistory.length === 0) {
+                historyDiv.innerHTML = '<p class="text-gray-500 text-sm">No search history yet</p>';
+                return;
+            }
+            
+            historyDiv.innerHTML = searchHistory.map(item => `
+                <button onclick='replaySearch(${JSON.stringify(item).replace(/'/g, "\\'")})'
+                    class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-gray-300 transition">
+                    <div class="text-sm font-medium text-gray-900 truncate">${item.query}</div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        ${item.contextName} • ${new Date(item.timestamp).toLocaleDateString()}
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function replaySearch(item) {
+            document.getElementById('search-input').value = item.query;
+            setPatientContext(item.context);
+            performSearch();
+        }
+
+        function clearSearchHistory() {
+            if (confirm('Clear all search history?')) {
+                searchHistory = [];
+                localStorage.removeItem('medicalSearchHistory');
+                loadSearchHistory();
+            }
+        }
+        
+        function getContextName(context) {
+            const contextNames = {
+                'SYNTHETIC-CASE_1': 'Rajesh Kumar - Oral SCC',
+                'SYNTHETIC-CASE_2': 'Lakshmi Devi - Cervical Carcinoma',
+                'SYNTHETIC-CASE_3': 'Rina Saha - Breast Carcinoma'
+            };
+            return contextNames[context] || 'General Search';
+        }
+
+        let searchTimer;
+        let progressInterval;
+        let searchStartTime;
+
+        function animateSearchSteps() {
+            const query = document.getElementById('search-input').value.trim();
+            
+            // Display current query
+            document.getElementById('current-query').textContent = query;
+            
+            // Start timer
+            searchStartTime = Date.now();
+            searchTimer = setInterval(updateSearchTimer, 1000);
+            
+            // Setup tab switching
+            setupTabSwitching();
+            
+            // Start minimal progress animation
+            startProgressAnimation();
+            
+            // Populate real sources and steps
+            populateRealSearchProcess(query);
+        }
+        
+        function startProgressAnimation() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            searchStartTime = Date.now();
+            let currentProgress = 0;
+            
+            const steps = [
+                { threshold: 0, text: 'Initializing search...' },
+                { threshold: 20, text: 'Querying medical databases...' },
+                { threshold: 40, text: 'Analyzing results...' },
+                { threshold: 60, text: 'Filtering peer-reviewed sources...' },
+                { threshold: 80, text: 'Finalizing results...' }
+            ];
+            
+            progressInterval = setInterval(() => {
+                const elapsed = Date.now() - searchStartTime;
+                
+                // Progress more slowly as time goes on, maxing at 95% until real results arrive
+                if (elapsed < 5000) {
+                    currentProgress = Math.min(95, (elapsed / 5000) * 95);
+                } else {
+                    // After 5 seconds, progress very slowly to 95%
+                    currentProgress = Math.min(95, 95 + ((elapsed - 5000) / 10000) * 5);
+                }
+                
+                progressBar.style.width = currentProgress + '%';
+                
+                // Update text based on progress
+                for (let i = steps.length - 1; i >= 0; i--) {
+                    if (currentProgress >= steps[i].threshold) {
+                        progressText.textContent = steps[i].text;
+                        break;
+                    }
+                }
+            }, 100);
+        }
+
+        function updateSearchTimer() {
+            const elapsed = Math.floor((Date.now() - searchStartTime) / 1000);
+            document.getElementById('search-timer').textContent = `${elapsed}s`;
+        }
+
+        function setupTabSwitching() {
+            document.querySelectorAll('.minimal-tab').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.dataset.tab;
+                    
+                    // Update button states
+                    document.querySelectorAll('.minimal-tab').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    btn.classList.add('active');
+                    
+                    // Update content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(`${targetTab}-tab`).classList.remove('hidden');
+                });
+            });
+        }
+
+        function populateRealSearchProcess(query) {
+            // Generate dynamic sources based on search query
+            const dynamicSources = generateDynamicSources(query.toLowerCase());
+            
+            // Store sources globally so they can be used later if needed
+            window.currentSources = dynamicSources;
+            
+            function generateDynamicSources(searchQuery) {
+                const baseSources = [];
+                
+                // Always include core medical databases
+                baseSources.push({
+                    name: 'PubMed Central',
+                    url: `https://www.ncbi.nlm.nih.gov/pmc/?term=${encodeURIComponent(searchQuery)}`,
+                    description: `${capitalizeFirst(searchQuery)} - PMC Search Results`,
+                    favicon: '🔬'
+                });
+
+                // Query-specific sources
+                if (searchQuery.includes('nccn') || searchQuery.includes('guideline')) {
+                    baseSources.push({
+                        name: 'NCCN Guidelines',
+                        url: `https://www.nccn.org/guidelines/category_1`,
+                        description: `NCCN Clinical Practice Guidelines for ${capitalizeFirst(searchQuery)}`,
+                        favicon: '📋'
+                    });
+                }
+
+                if (searchQuery.includes('immunotherapy') || searchQuery.includes('immune')) {
+                    baseSources.push({
+                        name: 'Cancer Immunotherapy Research',
+                        url: `https://www.cancer.gov/about-cancer/treatment/types/immunotherapy`,
+                        description: `Immunotherapy Treatment Information - National Cancer Institute`,
+                        favicon: '🛡️'
+                    });
+                    baseSources.push({
+                        name: 'Journal of Clinical Oncology',
+                        url: `https://ascopubs.org/journal/jco`,
+                        description: `Clinical trials and research on ${searchQuery}`,
+                        favicon: '📄'
+                    });
+                }
+
+                if (searchQuery.includes('target') || searchQuery.includes('therapy')) {
+                    baseSources.push({
+                        name: 'Targeted Therapy Database',
+                        url: `https://www.cancer.gov/about-cancer/treatment/types/targeted-therapies`,
+                        description: `Targeted Cancer Therapies - ${capitalizeFirst(searchQuery)}`,
+                        favicon: '🎯'
+                    });
+                }
+
+                if (searchQuery.includes('clinical trial') || searchQuery.includes('trial')) {
+                    baseSources.push({
+                        name: 'ClinicalTrials.gov',
+                        url: `https://clinicaltrials.gov/search?term=${encodeURIComponent(searchQuery)}`,
+                        description: `Active clinical trials for ${searchQuery}`,
+                        favicon: '🧪'
+                    });
+                }
+
+                if (searchQuery.includes('drug') || searchQuery.includes('medication')) {
+                    baseSources.push({
+                        name: 'FDA Orange Book',
+                        url: `https://www.fda.gov/drugs`,
+                        description: `FDA approved drugs for ${searchQuery}`,
+                        favicon: '💊'
+                    });
+                }
+
+                if (searchQuery.includes('genomic') || searchQuery.includes('mutation') || searchQuery.includes('gene')) {
+                    baseSources.push({
+                        name: 'The Cancer Genome Atlas',
+                        url: `https://portal.gdc.cancer.gov/`,
+                        description: `Genomic data and mutations related to ${searchQuery}`,
+                        favicon: '🧬'
+                    });
+                    baseSources.push({
+                        name: 'ClinVar Database',
+                        url: `https://www.ncbi.nlm.nih.gov/clinvar/`,
+                        description: `Genetic variants and clinical significance`,
+                        favicon: '🔬'
+                    });
+                }
+
+                if (searchQuery.includes('breast') || searchQuery.includes('mammary')) {
+                    baseSources.push({
+                        name: 'Breast Cancer Research Foundation',
+                        url: `https://www.bcrf.org/`,
+                        description: `Breast cancer research and treatment guidelines`,
+                        favicon: '🎗️'
+                    });
+                }
+
+                if (searchQuery.includes('lung') || searchQuery.includes('pulmonary')) {
+                    baseSources.push({
+                        name: 'Lung Cancer Alliance',
+                        url: `https://lungevity.org/`,
+                        description: `Lung cancer treatment and research`,
+                        favicon: '🫁'
+                    });
+                }
+
+                if (searchQuery.includes('colon') || searchQuery.includes('colorectal')) {
+                    baseSources.push({
+                        name: 'Colorectal Cancer Alliance',
+                        url: `https://www.ccalliance.org/`,
+                        description: `Colorectal cancer research and guidelines`,
+                        favicon: '🎗️'
+                    });
+                }
+
+                // WHO sources for general medical queries
+                if (searchQuery.includes('who') || searchQuery.includes('world health')) {
+                    baseSources.push({
+                        name: 'World Health Organization',
+                        url: `https://www.who.int/health-topics/cancer`,
+                        description: `WHO cancer guidelines and global statistics`,
+                        favicon: '🌍'
+                    });
+                }
+
+                // ESMO for European guidelines
+                if (searchQuery.includes('esmo') || searchQuery.includes('european')) {
+                    baseSources.push({
+                        name: 'ESMO Guidelines',
+                        url: `https://www.esmo.org/guidelines`,
+                        description: `European oncology practice guidelines`,
+                        favicon: '🇪🇺'
+                    });
+                }
+
+                // ASCO for general oncology
+                if (searchQuery.includes('asco') || searchQuery.includes('oncolog')) {
+                    baseSources.push({
+                        name: 'American Society of Clinical Oncology',
+                        url: `https://www.asco.org/research-guidelines`,
+                        description: `Clinical practice guidelines and research`,
+                        favicon: '🩺'
+                    });
+                }
+
+                // Always add Cochrane for evidence-based medicine
+                baseSources.push({
+                    name: 'Cochrane Library',
+                    url: `https://www.cochranelibrary.com/search?q=${encodeURIComponent(searchQuery)}`,
+                    description: `Systematic reviews and meta-analyses on ${searchQuery}`,
+                    favicon: '📚'
+                });
+
+                // Add UpToDate for clinical information
+                baseSources.push({
+                    name: 'UpToDate Clinical Database',
+                    url: `https://www.uptodate.com/`,
+                    description: `Evidence-based clinical decision support for ${searchQuery}`,
+                    favicon: '⚕️'
+                });
+
+                return baseSources.slice(0, 8); // Limit to 8 sources max
+            }
+
+            function capitalizeFirst(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+
+            const sourcesContainer = document.getElementById('active-sources');
+            const sourcesCount = document.getElementById('sources-count');
+            
+            sourcesContainer.innerHTML = '';
+            let foundCount = 0;
+
+            dynamicSources.forEach((source, index) => {
+                const sourceElement = document.createElement('div');
+                sourceElement.className = 'border border-gray-200 rounded-md p-3 transition hover:bg-gray-50 cursor-pointer';
+                sourceElement.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="text-lg mr-3">${source.favicon}</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-medium text-gray-900 truncate">${source.name}</div>
+                            <div class="text-xs text-gray-500 mt-1 truncate">${source.description}</div>
+                        </div>
+                    </div>
+                `;
+                
+                sourceElement.onclick = () => window.open(source.url, '_blank');
+                sourcesContainer.appendChild(sourceElement);
+                
+                // Simulate finding sources progressively
+                setTimeout(() => {
+                    sourceElement.style.borderColor = '#10b981';
+                    sourceElement.style.backgroundColor = '#f0fdf4';
+                    foundCount++;
+                    sourcesCount.textContent = foundCount;
+                }, 1000 + index * 500 + Math.random() * 500);
+            });
+
+            // Populate search steps
+            populateSearchSteps(query);
+        }
+        
+        function showAnimatedSources(query) {
+            const dynamicSources = window.currentSources || generateDynamicSources(query.toLowerCase());
+            const sourcesContainer = document.getElementById('active-sources');
+            const sourcesCount = document.getElementById('sources-count');
+            
+            let foundCount = 0;
+
+            dynamicSources.forEach((source, index) => {
+                const sourceElement = document.createElement('div');
+                sourceElement.className = 'border border-gray-200 rounded-md p-3 transition hover:bg-gray-50 cursor-pointer';
+                sourceElement.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="text-lg mr-3">${source.favicon}</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-medium text-gray-900 truncate">${source.name}</div>
+                            <div class="text-xs text-gray-500 mt-1 truncate">${source.description}</div>
+                        </div>
+                    </div>
+                `;
+                
+                sourceElement.onclick = () => window.open(source.url, '_blank');
+                sourcesContainer.appendChild(sourceElement);
+                
+                // Simulate finding sources progressively
+                setTimeout(() => {
+                    sourceElement.style.borderColor = '#10b981';
+                    sourceElement.style.backgroundColor = '#f0fdf4';
+                    foundCount++;
+                    if (sourcesCount) {
+                        sourcesCount.textContent = foundCount;
+                    }
+                }, 200 + index * 300 + Math.random() * 200);
+            });
+        }
+
+        function populateSearchSteps(query) {
+            const stepsContainer = document.getElementById('search-process');
+            
+            // Generate dynamic steps based on query
+            const dynamicSteps = generateDynamicSteps(query.toLowerCase());
+            
+            function generateDynamicSteps(searchQuery) {
+                const steps = [
+                    { text: 'Analyzing search query and patient context', delay: 500 },
+                    { text: `Searching for: "${query}"`, delay: 1000 },
+                    { text: 'Querying PubMed Central database', delay: 2000 }
+                ];
+
+                // Add query-specific steps
+                if (searchQuery.includes('nccn') || searchQuery.includes('guideline')) {
+                    steps.push({ text: 'Accessing NCCN clinical practice guidelines', delay: 3500 });
+                } else if (searchQuery.includes('immunotherapy') || searchQuery.includes('immune')) {
+                    steps.push({ text: 'Searching immunotherapy research databases', delay: 3500 });
+                    steps.push({ text: 'Cross-referencing clinical trial outcomes', delay: 4500 });
+                } else if (searchQuery.includes('target') || searchQuery.includes('therapy')) {
+                    steps.push({ text: 'Accessing targeted therapy databases', delay: 3500 });
+                    steps.push({ text: 'Analyzing molecular targeting mechanisms', delay: 4500 });
+                } else if (searchQuery.includes('clinical trial') || searchQuery.includes('trial')) {
+                    steps.push({ text: 'Querying ClinicalTrials.gov database', delay: 3500 });
+                    steps.push({ text: 'Filtering active and recruiting trials', delay: 4500 });
+                } else if (searchQuery.includes('drug') || searchQuery.includes('medication')) {
+                    steps.push({ text: 'Accessing FDA drug approval database', delay: 3500 });
+                    steps.push({ text: 'Cross-referencing drug interactions', delay: 4500 });
+                } else if (searchQuery.includes('genomic') || searchQuery.includes('mutation')) {
+                    steps.push({ text: 'Querying Cancer Genome Atlas', delay: 3500 });
+                    steps.push({ text: 'Analyzing genetic variant databases', delay: 4500 });
+                } else if (searchQuery.includes('breast')) {
+                    steps.push({ text: 'Accessing breast cancer research databases', delay: 3500 });
+                } else if (searchQuery.includes('lung')) {
+                    steps.push({ text: 'Searching lung cancer treatment databases', delay: 3500 });
+                } else if (searchQuery.includes('colon') || searchQuery.includes('colorectal')) {
+                    steps.push({ text: 'Accessing colorectal cancer research', delay: 3500 });
+                } else {
+                    steps.push({ text: 'Cross-referencing specialized databases', delay: 3500 });
+                }
+
+                // Always add these final steps
+                steps.push({ text: 'Filtering by peer-reviewed sources', delay: 5500 });
+                steps.push({ text: 'Validating source credibility and recency', delay: 6500 });
+                steps.push({ text: 'Ranking results by clinical relevance', delay: 7500 });
+                steps.push({ text: 'Generating evidence-based report', delay: 8500 });
+
+                return steps;
+            }
+
+            const steps = dynamicSteps;
+
+            stepsContainer.innerHTML = '';
+
+            steps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'flex items-center text-sm text-gray-500 py-2';
+                stepElement.innerHTML = `
+                    <div class="w-2 h-2 rounded-full bg-gray-300 mr-3" id="step-indicator-${index}"></div>
+                    <span>${step.text}</span>
+                `;
+                
+                stepsContainer.appendChild(stepElement);
+                
+                // Activate steps progressively
+                setTimeout(() => {
+                    stepElement.style.color = '#111827';
+                    document.getElementById(`step-indicator-${index}`).style.backgroundColor = '#111827';
+                    
+                    // Mark as completed after a moment
+                    setTimeout(() => {
+                        stepElement.style.color = '#6b7280';
+                        document.getElementById(`step-indicator-${index}`).style.backgroundColor = '#10b981';
+                    }, 500);
+                }, step.delay);
+            });
+        }
+    </script>
+</body>
+</html>

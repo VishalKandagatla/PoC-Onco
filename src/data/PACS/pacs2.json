@@ -1,0 +1,20 @@
+{
+  "patient_id": "case_2",
+  "imaging_studies": [
+    {
+      "study_id": "case_2_baseline",
+      "modality": "MRI",
+      "body_site": "Pelvis",
+      "date": "2025-02-01",
+      "image_file": "pacs/imaging_baseline.png"
+    },
+    {
+      "study_id": "case_2_followup",
+      "modality": "CT",
+      "body_site": "Pelvis",
+      "date": "2025-10-01",
+      "image_file": "pacs/imaging_followup.png"
+    }
+  ],
+  "notes": "Baseline MRI shows bulky cervical mass; follow-up CT demonstrates no residual mass."
+}

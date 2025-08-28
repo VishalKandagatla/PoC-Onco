@@ -1,0 +1,61 @@
+[
+  {
+    "resourceType": "ImagingStudy",
+    "id": "IMG-2023-001",
+    "status": "available",
+    "started": "2023-11-20T10:00:00Z",
+    "modality": [
+      {
+        "system": "http://dicom.nema.org/resources/ontology/DCM",
+        "code": "CT",
+        "display": "Computed Tomography"
+      }
+    ],
+    "description": "Head CT - baseline imaging for oral squamous cell carcinoma",
+    "series": [
+      {
+        "uid": "1.2.3.4.5.6.7.8.9.10",
+        "modality": {
+          "system": "http://dicom.nema.org/resources/ontology/DCM",
+          "code": "CT"
+        },
+        "description": "Axial CT images of head and neck"
+      }
+    ],
+    "note": [
+      {
+        "text": "3.5cm mass in right buccal mucosa with local invasion. No evidence of nodal metastases. Findings consistent with locally advanced oral squamous cell carcinoma."
+      }
+    ],
+    "sourceReference": "nlm.nih.gov/visible-human-ct"
+  },
+  {
+    "resourceType": "ImagingStudy", 
+    "id": "IMG-2024-001",
+    "status": "available",
+    "started": "2024-01-15T14:30:00Z",
+    "modality": [
+      {
+        "system": "http://dicom.nema.org/resources/ontology/DCM",
+        "code": "MR",
+        "display": "Magnetic Resonance"
+      }
+    ],
+    "description": "Follow-up brain MRI to assess for intracranial metastases",
+    "series": [
+      {
+        "uid": "1.2.3.4.5.6.7.8.9.11",
+        "modality": {
+          "system": "http://dicom.nema.org/resources/ontology/DCM",
+          "code": "MR"
+        },
+        "description": "T1 and T2 weighted brain MRI sequences"
+      }
+    ],
+    "note": [
+      {
+        "text": "No evidence of intracranial metastases. Brain parenchyma appears normal."
+      }
+    ]
+  }
+]

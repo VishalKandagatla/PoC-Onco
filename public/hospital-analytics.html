@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Analytics - Entheory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/analytics.css">
+    
+    <!-- JavaScript Modules -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/navigation.js"></script>
+    <script src="/js/components.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation will be inserted by navigation.js -->
+    
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="page-title">Hospital Analytics</h1>
+            <p class="page-subtitle">Comprehensive insights for hospital administration and operational excellence</p>
+        </div>
+
+        <!-- Time Period Selector -->
+        <div class="time-selector">
+            <div class="time-option active" data-period="today">Today</div>
+            <div class="time-option" data-period="week">This Week</div>
+            <div class="time-option" data-period="month">This Month</div>
+            <div class="time-option" data-period="year">This Year</div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="analytics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon patients">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="metric-value" id="total-patients">1,247</div>
+                        <div class="metric-label">Total Patients</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up mr-1"></i>+8.2% from last month
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon revenue">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="metric-value" id="revenue">$2.1M</div>
+                        <div class="metric-label">Monthly Revenue</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up mr-1"></i>+12.5% from last month
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon efficiency">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="metric-value" id="avg-wait-time">23</div>
+                        <div class="metric-label">Avg Wait Time (min)</div>
+                        <div class="metric-change negative">
+                            <i class="fas fa-arrow-down mr-1"></i>+3.1% from last month
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon satisfaction">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="metric-value" id="satisfaction">4.6</div>
+                        <div class="metric-label">Patient Satisfaction</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up mr-1"></i>+0.3 from last month
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon capacity">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="metric-value" id="bed-occupancy">87%</div>
+                        <div class="metric-label">Bed Occupancy</div>
+                        <div class="metric-change neutral">
+                            <i class="fas fa-minus mr-1"></i>-1.2% from last month
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon quality">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="metric-value" id="quality-score">92%</div>
+                        <div class="metric-label">Quality Score</div>
+                        <div class="metric-change positive">
+                            <i class="fas fa-arrow-up mr-1"></i>+2.1% from last month
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">System Alerts</h2>
+            <div id="alerts-container">
+                <div class="alert-card warning">
+                    <div class="alert-header">
+                        <i class="fas fa-exclamation-triangle alert-icon text-yellow-600"></i>
+                        <span class="alert-title">High Wait Times in Emergency</span>
+                    </div>
+                    <div class="alert-message">
+                        Emergency department wait times have exceeded 45 minutes. Consider staffing adjustments.
+                    </div>
+                </div>
+                
+                <div class="alert-card info">
+                    <div class="alert-header">
+                        <i class="fas fa-info-circle alert-icon text-blue-600"></i>
+                        <span class="alert-title">Upcoming Equipment Maintenance</span>
+                    </div>
+                    <div class="alert-message">
+                        MRI Unit 2 scheduled for maintenance on Friday 3PM-6PM. Reschedule appointments accordingly.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department Performance -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <div>
+                    <h2 class="chart-title">Department Performance</h2>
+                    <p class="chart-subtitle">Key metrics by department for operational oversight</p>
+                </div>
+            </div>
+            
+            <div class="department-grid">
+                <div class="department-card">
+                    <div class="department-name">Oncology</div>
+                    <div class="department-metrics">
+                        <div class="department-metric">
+                            <div class="department-metric-value">156</div>
+                            <div class="department-metric-label">Patients</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">4.8</div>
+                            <div class="department-metric-label">Rating</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">$487K</div>
+                            <div class="department-metric-label">Revenue</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">18</div>
+                            <div class="department-metric-label">Avg Wait</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="department-card">
+                    <div class="department-name">Emergency</div>
+                    <div class="department-metrics">
+                        <div class="department-metric">
+                            <div class="department-metric-value">423</div>
+                            <div class="department-metric-label">Patients</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">4.2</div>
+                            <div class="department-metric-label">Rating</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">$298K</div>
+                            <div class="department-metric-label">Revenue</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">45</div>
+                            <div class="department-metric-label">Avg Wait</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="department-card">
+                    <div class="department-name">Cardiology</div>
+                    <div class="department-metrics">
+                        <div class="department-metric">
+                            <div class="department-metric-value">198</div>
+                            <div class="department-metric-label">Patients</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">4.7</div>
+                            <div class="department-metric-label">Rating</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">$612K</div>
+                            <div class="department-metric-label">Revenue</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">25</div>
+                            <div class="department-metric-label">Avg Wait</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="department-card">
+                    <div class="department-name">Surgery</div>
+                    <div class="department-metrics">
+                        <div class="department-metric">
+                            <div class="department-metric-value">89</div>
+                            <div class="department-metric-label">Procedures</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">4.9</div>
+                            <div class="department-metric-label">Rating</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">$823K</div>
+                            <div class="department-metric-label">Revenue</div>
+                        </div>
+                        <div class="department-metric">
+                            <div class="department-metric-value">12</div>
+                            <div class="department-metric-label">Avg Wait</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Overview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div>
+                        <h2 class="chart-title">Revenue Trends</h2>
+                        <p class="chart-subtitle">Monthly revenue performance</p>
+                    </div>
+                </div>
+                <div class="h-64 flex items-center justify-center text-gray-500">
+                    <i class="fas fa-chart-line text-4xl mb-4"></i>
+                    <div class="ml-4">
+                        <p class="font-semibold">Revenue Chart</p>
+                        <p class="text-sm">Chart visualization would be implemented here</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div>
+                        <h2 class="chart-title">Patient Flow</h2>
+                        <p class="chart-subtitle">Daily patient admissions and discharges</p>
+                    </div>
+                </div>
+                <div class="h-64 flex items-center justify-center text-gray-500">
+                    <i class="fas fa-chart-area text-4xl mb-4"></i>
+                    <div class="ml-4">
+                        <p class="font-semibold">Patient Flow Chart</p>
+                        <p class="text-sm">Chart visualization would be implemented here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class HospitalAnalyticsController {
+            constructor() {
+                this.currentPeriod = 'month';
+            }
+
+            init() {
+                // Initialize navigation
+                Navigation.init('analytics');
+
+                // Setup event listeners
+                this.setupEventListeners();
+                
+                console.log('Hospital Analytics initialized');
+            }
+
+            setupEventListeners() {
+                // Time period selector
+                document.querySelectorAll('.time-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        this.switchTimePeriod(e.target.dataset.period);
+                    });
+                });
+            }
+
+            switchTimePeriod(period) {
+                // Update active state
+                document.querySelectorAll('.time-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                document.querySelector(`[data-period="${period}"]`).classList.add('active');
+                
+                this.currentPeriod = period;
+                this.updateMetrics(period);
+            }
+
+            updateMetrics(period) {
+                // Simulate different metrics based on time period
+                const metrics = {
+                    today: {
+                        patients: '1,247',
+                        revenue: '$2.1M',
+                        waitTime: '23',
+                        satisfaction: '4.6',
+                        occupancy: '87%',
+                        quality: '92%'
+                    },
+                    week: {
+                        patients: '8,642',
+                        revenue: '$14.7M',
+                        waitTime: '21',
+                        satisfaction: '4.5',
+                        occupancy: '89%',
+                        quality: '91%'
+                    },
+                    month: {
+                        patients: '34,891',
+                        revenue: '$58.2M',
+                        waitTime: '25',
+                        satisfaction: '4.4',
+                        occupancy: '85%',
+                        quality: '93%'
+                    },
+                    year: {
+                        patients: '421,847',
+                        revenue: '$698.5M',
+                        waitTime: '27',
+                        satisfaction: '4.3',
+                        occupancy: '83%',
+                        quality: '94%'
+                    }
+                };
+
+                const data = metrics[period];
+                if (data) {
+                    document.getElementById('total-patients').textContent = data.patients;
+                    document.getElementById('revenue').textContent = data.revenue;
+                    document.getElementById('avg-wait-time').textContent = data.waitTime;
+                    document.getElementById('satisfaction').textContent = data.satisfaction;
+                    document.getElementById('bed-occupancy').textContent = data.occupancy;
+                    document.getElementById('quality-score').textContent = data.quality;
+                }
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const analytics = new HospitalAnalyticsController();
+            analytics.init();
+            
+            // Make available globally for debugging
+            window.analytics = analytics;
+        });
+    </script>
+</body>
+</html>

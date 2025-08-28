@@ -1,0 +1,9 @@
+{
+  "patient_id": "case_1",
+  "sample_type": "Surgical biopsy of mandibular lesion",
+  "tumor_grade": "Moderately differentiated (Grade II)",
+  "histology": "Invasive squamous cell carcinoma with keratin pearls.",
+  "infiltration": "Invasion into surrounding soft tissue, margins negative.",
+  "pathology_notes": "Tumor shows features consistent with moderately differentiated squamous carcinoma.",
+  "image_path": "pathology/pathology_image.png"
+}

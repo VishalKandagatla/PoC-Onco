@@ -1,0 +1,49 @@
+{
+  "resourceType": "DiagnosticReport",
+  "id": "PATH-2023-001",
+  "status": "final",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+          "code": "PAT",
+          "display": "Pathology"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "60567-5",
+        "display": "Comprehensive pathology report"
+      }
+    ]
+  },
+  "issued": "2023-11-15T16:00:00Z",
+  "specimen": [
+    {
+      "display": "Biopsy - oral cavity, right buccal mucosa"
+    }
+  ],
+  "conclusion": "Invasive moderately differentiated squamous cell carcinoma, depth of invasion 8mm. Perineural invasion present. Lymphovascular invasion not identified.",
+  "conclusionCode": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "29827009",
+          "display": "Squamous cell carcinoma"
+        }
+      ]
+    }
+  ],
+  "presentedForm": [
+    {
+      "contentType": "text/plain",
+      "data": "PATHOLOGY REPORT\n\nSpecimen: Biopsy, right buccal mucosa\nClinical History: 58-year-old male with non-healing oral ulcer\n\nGROSS DESCRIPTION:\nReceived in formalin is a 1.2 x 0.8 x 0.5 cm fragment of tan-pink soft tissue.\n\nMICROSCOPIC DESCRIPTION:\nSections show invasive moderately differentiated squamous cell carcinoma arising from oral mucosa. The tumor shows keratinization and intercellular bridges. Depth of invasion measures 8mm. Perineural invasion is present. Lymphovascular invasion is not identified.\n\nDIAGNOSIS:\nSquamous cell carcinoma, moderately differentiated (Grade 2)\nDepth of invasion: 8mm\nPerineural invasion: Present\nLymphovascular invasion: Absent"
+    }
+  ]
+}

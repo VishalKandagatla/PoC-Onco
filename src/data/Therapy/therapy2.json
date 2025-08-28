@@ -1,0 +1,18 @@
+{
+  "patient_id": "case_2",
+  "treatments": [
+    {
+      "type": "Chemoradiation",
+      "date": "2025-02-10 to 2025-04-10",
+      "regimen": "Weekly cisplatin concurrent with pelvic radiation",
+      "dose": "50 Gy external beam",
+      "status": "Completed"
+    },
+    {
+      "type": "Brachytherapy",
+      "date": "2025-04-15 to 2025-04-30",
+      "dose": "30 Gy in 3 fractions",
+      "status": "Completed"
+    }
+  ]
+}
