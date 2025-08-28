@@ -16,6 +16,10 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
+# Build frontend assets
+echo "🛠️ Building frontend assets..."
+npm run build
+
 # Start the server
 echo "🚀 Starting development server on port 3001..."
 echo "📋 Main Dashboard: http://localhost:3001"
@@ -35,3 +39,4 @@ echo ""
 
 # Run the development server
 npm run dev
+
