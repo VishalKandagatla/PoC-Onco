@@ -30,6 +30,11 @@ app.use('/api/datasources', dataSourceRoutes);
 app.use('/api/longitudinal', longitudinalRoutes);
 app.use('/api', searchRoutes);
 
+// Default route: serve clinician dashboard
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public', 'clinician-dashboard.html'));
+});
+
 // Static assets
 const distPath = path.join(__dirname, '../dist');
 const publicPath = path.join(__dirname, '../public');
